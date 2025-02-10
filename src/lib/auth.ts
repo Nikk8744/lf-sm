@@ -42,10 +42,29 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({token, user}) {},
-        async session({session, token}) {}
+        async jwt({token, user}) {
+            if(user){
+                token.id = user.id
+            }
+            return token;
+        },
+        async session({session, token}) {
+
+            if(session.user){
+                session.user.id = token.id as string;
+            }
+
+            return session
+        }
+    },
+    pages: {
+        signIn: "/login",
+        error: "/login",
+
     },
     session: {
         strategy: 'jwt', // a session has 2 strategy db and jwt, we have chose jwt.
-    }
+        // maxAge: 30 * 24 * 60 * 60
+    },
+    secret: process.env.NEXTAUTH_SECRET
 } 
