@@ -23,6 +23,7 @@ export const products = pgTable('products', {
     image: text('image'),
     farmerId: uuid('farmer_id').notNull().references(() => users.id),
     quantity: integer('quantity'),
+    farmLocation: text('farm_location'),
     createdAt: timestamp('created_at', {
         withTimezone: true,
     }).notNull().defaultNow(),

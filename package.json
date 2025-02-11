@@ -10,7 +10,7 @@
     "db:generate": "npx drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate",
     "db:studio": "npx drizzle-kit studio",
-    "db:seed": "npx tsx database/seed.ts",
+    "db:seed": "npx tsx src/database/seed.ts",
     "db:push": "npx drizzle-kit push"
   },
   "dependencies": {
@@ -19,7 +19,9 @@
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-navigation-menu": "^1.2.5",
+    "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-toast": "^1.2.6",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
@@ -27,6 +29,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.2",
+    "embla-carousel-react": "^8.5.2",
     "imagekit": "^6.0.0",
     "imagekitio-next": "^1.0.1",
     "lucide-react": "^0.475.0",

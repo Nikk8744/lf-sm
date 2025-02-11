@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "farm_location" text;

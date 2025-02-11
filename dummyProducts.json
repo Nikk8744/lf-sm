@@ -1,0 +1,172 @@
+[
+    {
+        "name": "Carrot",
+        "description": "A root vegetable known for its vibrant orange color and sweet flavor.",
+        "price": "4",
+        "image": "https://images.unsplash.com/photo-1582515073490-39981397c445?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "adajan",
+        "quantity": 18
+    },
+    {
+        "name": "Tomato",
+        "description": "A juicy red fruit often used as a vegetable in salads and sauces.",
+        "price": "3",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 25
+    },
+    {
+        "name": "Broccoli",
+        "description": "A green vegetable resembling a small tree, rich in vitamins and minerals.",
+        "price": "5",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 12
+    },
+    {
+        "name": "Spinach",
+        "description": "A leafy green vegetable known for its high iron content.",
+        "price": "3",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "bhatar",
+        "quantity": 30
+    },
+    {
+        "name": "Cucumber",
+        "description": "A refreshing green vegetable with a mild flavor, often used in salads.",
+        "price": "2",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 20
+    },
+    {
+        "name": "Lettuce",
+        "description": "A leafy green vegetable commonly used in salads and sandwiches.",
+        "price": "3",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "adajan",
+        "quantity": 15
+    },
+    {
+        "name": "Onion",
+        "description": "A bulbous vegetable with a strong flavor, used as a base in many dishes.",
+        "price": "2",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 40
+    },
+    {
+        "name": "Garlic",
+        "description": "A pungent bulb used to add flavor to various cuisines.",
+        "price": "3",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 50
+    },
+    {
+        "name": "Potato",
+        "description": "A starchy tuber used in a variety of dishes worldwide.",
+        "price": "2",
+        "image": "https://images.unsplash.com/photo-1574158622682-8a8a8a8a8a8a?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Vegetable",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 35
+    },
+    {
+        "name": "Apple",
+        "description": "A sweet and crunchy fruit, often red or green.",
+        "price": "2",
+        "image": "https://images.unsplash.com/photo-1561948950-687742e91338?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "adajan",
+        "quantity": 50
+    },
+    {
+        "name": "Banana",
+        "description": "A tropical fruit known for its yellow peel and sweet taste.",
+        "price": "1",
+        "image": "https://images.unsplash.com/photo-1574157364-c6ba5069d053?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 30
+    },
+    {
+        "name": "Orange",
+        "description": "A citrus fruit that is known for its refreshing and tangy taste.",
+        "price": "3",
+        "image": "https://images.unsplash.com/photo-1574164658-313be55196cf?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "bhatar",
+        "quantity": 40
+    },
+    {
+        "name": "Pineapple",
+        "description": "A tropical fruit known for its sweet and tangy flavor.",
+        "price": "5",
+        "image": "https://images.unsplash.com/photo-1583163610582-6beab37b2098?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 15
+    },
+    {
+        "name": "Mango",
+        "description": "A tropical stone fruit that is sweet and juicy.",
+        "price": "4",
+        "image": "https://images.unsplash.com/photo-1558998901-896fad6ed289?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 25
+    },
+    {
+        "name": "Strawberry",
+        "description": "A small, red fruit known for its sweetness and texture.",
+        "price": "6",
+        "image": "https://images.unsplash.com/photo-1574162709-b6a254efc7d6?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 20
+    },
+    {
+        "name": "Grapes",
+        "description": "Small, round fruits known for their sweetness, typically purple or green.",
+        "price": "7",
+        "image": "https://images.unsplash.com/photo-1574163629-d3200f5b271e?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 30
+    },
+    {
+        "name": "Peach",
+        "description": "A soft, juicy fruit with a sweet flavor, often yellow or orange.",
+        "price": "5",
+        "image": "https://images.unsplash.com/photo-1574158962-ef6b9f329aa8?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "category": "Fruit",
+        "farmerId": "d59a65c6-1b4b-4e39-afae-df116c602f37",
+        "farmLocation": "vesu",
+        "quantity": 18
+    }
+]
