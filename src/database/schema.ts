@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { decimal, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
 export const ROLE_ENUM = pgEnum('role', ['ADMIN', 'USER']);
 
@@ -17,7 +17,19 @@ export const users = pgTable('users', {
 export const products = pgTable('products', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
     name: text('name').notNull(),
-}) 
+    description: text('description'),
+    price: decimal('price').notNull(),
+    category: varchar('category').notNull(),
+    image: text('image'),
+    farmerId: uuid('farmer_id').notNull().references(() => users.id),
+    quantity: integer('quantity'),
+    createdAt: timestamp('created_at', {
+        withTimezone: true,
+    }).notNull().defaultNow(),
+});
+
+
+
 
 /* 
 Tables to create
