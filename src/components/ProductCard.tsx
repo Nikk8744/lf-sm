@@ -34,6 +34,7 @@ export function ProductCard({
       price,
       quantity: 1,
       imageUrl,
+      farmLocation,
     })
     alert("Product added to cart!!!")
   }

@@ -7,6 +7,7 @@ interface CartItem {
     price: number;
     quantity: number;
     imageUrl?: string;
+    farmLocation: string;
 }
 
 interface CartState {

@@ -10,7 +10,7 @@ import Image from "next/image";
 
 function Feature() {
   return (
-    <div className="w-full py-20 lg:py-40">
+    <div className="w-full py-20 lg:py-20">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 justify-end items-end  gap-10">
           <div className="flex gap-4 flex-col items-start justify-center">
@@ -22,10 +22,9 @@ function Feature() {
                 Purchase best produce directly from farmers
               </h2>
               <p className="text-lg  max-w-xl lg:max-w-sm leading-relaxed tracking-tight text-muted-foreground  text-left">
-                Managing a small business today is already tough. Avoid further
-                complications by ditching outdated, tedious trade methods. Our
-                goal is to streamline SMB trade, making it easier and faster than
-                ever.
+              Welcome to our Local Farmers Marketplace : a platform connecting you with fresh, locally grown produce straight from the farm. 
+              Support local farmers while enjoying high-quality, sustainable products. 
+              Shop now and enjoy the best of what your community has to offer!
               </p>
             </div>
           </div>
