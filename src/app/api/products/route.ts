@@ -8,7 +8,7 @@ export async function GET() {
         const allProducts = await db
             .select()
             .from(products)
-            .limit(10)
+            
             .orderBy(desc(products.createdAt))
 
         if(!allProducts || allProducts.length === 0){

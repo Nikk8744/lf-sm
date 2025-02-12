@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 // import { signInWithCredentials } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 interface FormValues {
   email: string;
@@ -114,6 +115,12 @@ export default function SignInPage() {
           </Button>
         </form>
       </Form>
+      <p className='text-center text-base font-semibold p-3'>
+          New to Farm Mart? 
+          <Link href={"/sign-up"} className='text-bold text-blue-500 hover:text-red-400'>
+              Create an account
+          </Link>
+      </p>
     </div>
   );
 }

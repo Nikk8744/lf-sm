@@ -4,7 +4,7 @@ import React from 'react'
 const ProductsPage = async () => {
   const response = await fetch(`http://localhost:3000/api/products`);
   const products = await response.json();
-  console.log("The response issss",products)
+  // console.log("The response issss",products)
   if(!response){
     return (
       <div className="container mx-auto px-4 py-8 text-center">

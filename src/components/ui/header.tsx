@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
-
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
@@ -13,12 +12,13 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 // import Link from "next/link";
+import {ShoppingCart} from "lucide-react";
 
 function Header1() {
 
   const [isOpen, setOpen] = useState(false);
   return (
-    <header className="w-full z-40 fixed top-0 left-0 bg-background bg-[#43adb3]">
+    <header className="w-full z-40 fixed top-0 left-0 bg-[#48b5bb]">
       <div className="container relative mx-auto min-h-20 flex gap-4 flex-row lg:grid lg:grid-cols-3 items-center">
         <div className="justify-start items-center gap-4 lg:flex hidden flex-row">
           <NavigationMenu className="flex justify-start items-start ">
@@ -41,9 +41,11 @@ function Header1() {
         </div>
 
         <div className="flex justify-end w-full gap-4">
-          <Button variant="ghost" className="hidden md:inline">
-            Book a demo
+          <Link href="/cart">
+          <Button variant="ghost" className="flex gap-2 text-center">
+            <ShoppingCart /> <p className="text-base font-semibold">Cart</p>
           </Button>
+          </Link>
           <div className="border-r hidden md:inline"></div>
           <Link href="/sign-in"><Button variant="outline" >Sign in</Button></Link>
           <Link href="/sign-up"><Button>Sign Up</Button></Link>
