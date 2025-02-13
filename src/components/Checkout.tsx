@@ -10,8 +10,8 @@ const Checkout = ({amount}: {amount: number}) => {
     const elements = useElements();
     
     const [errorMessage, setErrorMessage] = useState<string>();
-    const [clientSecret, setClientSecret] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [clientSecret, setClientSecret] = useState("");
+    const [loading, setLoading] = useState(false);
     
     useEffect(() => {
         fetch('/api/create-payment-intent', {
@@ -50,10 +50,9 @@ const Checkout = ({amount}: {amount: number}) => {
         })
 
         if (error) {
-            // This point is only reached if there's an immediate error when
-            // confirming the payment. Show the error to your customer (for example, payment details incomplete)
+            // Show the error to the user (e.g., payment details incomplete)
             setErrorMessage(error.message);
-          } else {
+        } else {
             // The payment UI automatically closes with a success animation.
             // Your customer is redirected to your `return_url`.
         }
@@ -64,30 +63,36 @@ const Checkout = ({amount}: {amount: number}) => {
         return (
           <div className="flex items-center justify-center">
             <div
-              className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+              className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-transparent border-t-4 border-blue-600"
               role="status"
             >
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Loading...
-              </span>
+              <span className="sr-only">Loading...</span>
             </div>
           </div>
         );
       }
-    //   const paymentElementOptions = {
-    //     layout: "accordion",
-    //   };
+
     return (
-        <div>
-            <form onSubmit={handleSubmit} className='bg-blue-400 p-10'>
-                <h1>{clientSecret}</h1>
+        <div className="bg-gray-50 w-full rounded-lg shadow-lg p-6 mt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* <h1>{clientSecret}</h1> */}
                 {/* <PaymentElement options={paymentElementOptions} /> */}
-                {clientSecret && <PaymentElement />}
-                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}err</div>}
-                <Button disabled={!stripe || loading}>Pay</Button>
+                <div className="bg-white p-6 rounded-lg shadow-sm">
+                    {clientSecret && <PaymentElement />}
+                </div>
+                {errorMessage && (
+                    <div className="text-red-600 text-center mt-4">
+                        {errorMessage}
+                    </div>
+                )}
+                <div className="flex justify-center mt-8">
+                    <Button disabled={!stripe || loading} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out">
+                        {loading ? "Processing..." : "Pay Now"}
+                    </Button>
+                </div>
             </form>
         </div>
     )
 }
 
-export default Checkout
+export default Checkout;
