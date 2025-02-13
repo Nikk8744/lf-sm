@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.pexels.com",
         pathname: "/**"
+      },
+      {
+        protocol: "https",
+        hostname: "js.stripe.com/v3/",
+        pathname: "/**"
       }
     ],
   },

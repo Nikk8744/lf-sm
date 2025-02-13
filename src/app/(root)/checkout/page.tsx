@@ -1,5 +1,4 @@
 'use client'
-// import { useCartStore } from "@/lib/useCartStore"; // Your Zustand cart store
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import Image from "next/image";

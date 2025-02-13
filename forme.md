@@ -20,7 +20,10 @@
 - add a notification system
 - add a user profile page
 - add a product details page
+- add a order page where the user can see all his orders
 - add a product reviews system - only after user has purchased the product
+
+
 
 
 - add a product edit page (optional)

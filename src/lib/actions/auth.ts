@@ -5,7 +5,7 @@ import { db } from "@/database/drizzle";
 import { users } from "@/database/schema";
 import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { signIn } from "next-auth/react"; // this is a client side component only
+import { signIn } from "next-auth/react"; // this is a client side component only so either i'll have to make change in the auth and export signIn and signOut there or wirte the signin/login code in signin page 
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">,
