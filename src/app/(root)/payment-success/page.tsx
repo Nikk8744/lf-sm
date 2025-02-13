@@ -1,20 +1,32 @@
-'use client'
+// src/app/payment-success/page.tsx (Order Confirmation Page)
+'use client';
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
-const OrderConfirmationPage = () => {
+const PaymentSuccess = () => {
   const router = useRouter();
-//   const { orderId } = router.query;  // Assume orderId is passed as a query parameter
+//   const { searchParams } = router.query;
+//   const amount = searchParams?.amount;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Order Confirmation</h1>
-      <p>Your order has been successfully processed!</p>
-      {/* <p>Order ID: {orderId}</p> */}
-      <Button onClick={() => router.push("/")} className="mt-4">Back to Home</Button>
+    <div className="container mx-auto p-8">
+      <h2 className="text-2xl font-bold">Payment Successfull!</h2>
+      <p className="mt-4">Thank you for your purchase.</p>
+      <p>Your order has been processed, and will be shipped soon.</p>
+      <div className="mt-6">
+        <h3 className="font-semibold">Order Details:</h3>
+        <ul>
+          <li>Order ID: #123456</li>
+          {/* <li>Total: ${amount}</li> */}
+          {/* Add other order details */}
+        </ul>
+      </div>
+      <Button onClick={() => router.push('/')} className="mt-4">
+        Go Back to Home
+      </Button>
     </div>
   );
 };
 
-export default OrderConfirmationPage;
+export default PaymentSuccess;
