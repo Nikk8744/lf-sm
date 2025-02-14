@@ -13,7 +13,7 @@
 
 ### Things that i have to lool afterwards
 - the signin/signup issue -  that after signup the user should be signedin automaticaly
-- filter the products by category
+- filter the products by category 
 - add a search bar
 - add a map view of the products
 - add a payment method 
@@ -37,3 +37,10 @@ Web-hooks
 - add a web-hook for when a product is added/edited/deleted
 - add a web-hook for when a user has purchased a product
 - add a web-hook for when a user has reviewed a product
+
+- imporve all the ui
+- make a component for the auth(sign/signup)
+- track order
+- cart notification
+- send emailmail - jsx email
+- order history

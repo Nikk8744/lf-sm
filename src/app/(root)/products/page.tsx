@@ -1,6 +1,8 @@
 import { ProductCard } from '@/components/ProductCard'
 import React from 'react'
 
+// export const revalidate = 120;
+
 const ProductsPage = async () => {
   const response = await fetch(`http://localhost:3000/api/products`);
   const products = await response.json();
@@ -12,6 +14,7 @@ const ProductsPage = async () => {
       </div>
     )
   }
+
 
   return (
     <div className="container mx-auto px-4 py-8">

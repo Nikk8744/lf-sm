@@ -1,22 +1,10 @@
 "use client";
-
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 // import { signInWithCredentials } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
+import AuthForm from "@/components/AuthForm";
+import { signInSchema } from "@/lib/validations";
 
 interface FormValues {
   email: string;
@@ -26,12 +14,6 @@ interface FormValues {
 export default function SignInPage() {
   const router = useRouter();
 
-  const form = useForm<FormValues>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
 
   async function onSubmit(data: FormValues) {
     // const result = await signInWithCredentials(data);
@@ -56,71 +38,13 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <p className="text-center font-medium font-mono text-black p-3">
-        Welcome Back
-      </p>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="email"
-            rules={{
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address",
-              },
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="john@example.com"
-                    type="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>Enter your email address.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="password"
-            rules={{
-              required: "Password is required",
-              minLength: {
-                value: 2,
-                message: "Password must be at least 5 characters",
-              },
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="password" {...field} />
-                </FormControl>
-                <FormDescription>Enter your password</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="w-full">
-            Submit
-          </Button>
-        </form>
-      </Form>
-      <p className='text-center text-base font-semibold p-3'>
-          New to Farm Mart? 
-          <Link href={"/sign-up"} className='text-bold text-blue-500 hover:text-red-400'>
-              Create an account
-          </Link>
-      </p>
-    </div>
+    <AuthForm 
+      title="Welcome Back"
+      buttonText="Sign-In"
+      linkText="New To Farm Mart? Create an Account.."
+      linkHref="/sign-up"
+      onSubmit={onSubmit}
+      schema={signInSchema}
+    />
   );
 }

@@ -12,6 +12,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";  // Import Link from Next.js
 import { useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
+import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
+import { useSession } from "next-auth/react";
 
 export function ProductCard({
   id,
@@ -22,8 +25,16 @@ export function ProductCard({
   farmLocation,
 }: ProductCardProps) {
   const addToCart = useCartStore((state) => state.addToCart);
+  const router = useRouter();
+  const session = useSession();
+  const { setProduct } = useDirectPurchaseStore();
 
+  // console.log("The session isssss",session)
   const handleAddToCart = () => {
+    if(!session.data){
+      router.push('/sign-in');
+      return;
+    }
     addToCart({
       productId: id,
       name,
@@ -33,6 +44,33 @@ export function ProductCard({
       farmLocation,
     });
     alert("Product added to cart!!!");
+  };
+  
+  const handleBuyNow = () => {
+    if(!session.data){
+      router.push('/sign-in');
+      return;
+    }
+    // setDirectPurchase({
+    //   productId: id,
+    //   name,
+    //   price,
+    //   quantity: 1,
+    //   imageUrl,
+    //   farmLocation,
+    // });
+    setProduct({
+      productId: id,
+      name,
+      price,
+      quantity: 1,
+      imageUrl,
+      farmLocation,
+    }); // Set the product in the store
+    router.push('/direct-checkout'); // Redirect to the Direct Checkout page
+    // Navigate to checkout
+
+    router.push('/direct-checkout');
   };
 
   return (
@@ -64,7 +102,7 @@ export function ProductCard({
       </CardContent>
 
       <CardFooter className="flex justify-between mt-4 gap-2">
-        <Button variant="outline" className="w-full py-2 text-sm font-semibold text-gray-800 border border-gray-300 rounded-md hover:bg-gray-100">
+        <Button onClick={handleBuyNow} variant="outline" className="w-full py-2 text-sm font-semibold text-gray-800 border border-gray-300 rounded-md hover:bg-gray-100">
           Buy
         </Button>
         <Button onClick={handleAddToCart} className="w-full py-2 text-sm font-semibold text-white rounded-md hover:bg-blue-700">

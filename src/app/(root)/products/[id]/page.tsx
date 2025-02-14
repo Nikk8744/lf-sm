@@ -22,6 +22,7 @@ const ProductDetails = ({
   imageUrl,
   farmLocation,
 }: ProductDetailsProps) => {
+  
   const addToCart = useCartStore((state) => state.addToCart);
 
   const handleAddToCart = () => {
