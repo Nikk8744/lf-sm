@@ -1,10 +1,13 @@
-'use client';
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { useCartStore } from "@/store/useCartStore";
 import { Elements } from "@stripe/react-stripe-js";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import Checkout from "@/components/Checkout";
+import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY === undefined) {
   console.error("Stripe publishable key is not set");
@@ -15,36 +18,107 @@ const stripePromise = loadStripe(
 );
 
 const PaymentPage = () => {
-  const { cart } = useCartStore();
-
-  const amount = () => {
+  const { cart, clearCart } = useCartStore();
+  const { product, clearProduct } = useDirectPurchaseStore();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'completed' | 'failed'>('pending');
+  // const searchParams = useSearchParams();
+  const calculateAmount = () => {
+    if (product) {
+      return Number(product.price * product.quantity);
+    }
     if (!cart || cart.length === 0) {
       return 0; // Handle empty cart case
     }
-    const amount = cart.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    if (amount > 0) return amount;
+    if (cart && cart.length > 0) {
+      return Number(cart.reduce((total, item) => total + item.price * item.quantity,0)); 
+    }
+  };
+  const amount = Number(calculateAmount());
+
+  const getPurchaseType = () => {
+    return product ? "direct" : "cart";
   };
 
+  const handlePaymentSuccess = async () => {
+    setPaymentStatus('completed');
+    router.push('/payment-success');
+  //   setTimeout(() => {
+  //     if(product){
+  //         clearProduct();
+  //     }
+  //     if(cart && cart.length > 0){
+  //         console.log("clearing the cartrttttttt")
+  //         clearCart();
+  //     }
+  // }, 100); // 100ms delay should be enough for the navigation to start
+
+    console.log("Payment Successfullllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
+    // if(product){
+    //   clearProduct();
+    // }
+    // if(cart && cart.length > 0){
+    //   console.log("clearing the cartrttttttt")
+    //   clearCart();
+    // }
+    // await new Promise(resolve => setTimeout(resolve, 100));
+  };
+
+  const handlePaymentFailure = () => {
+    setPaymentStatus('failed');
+    console.log("Payment Faileddddddddddddddddddddddddddddddddd");
+    router.push('/payment-failed')
+  };
+  
+
+  useEffect(() => {
+    if (!session?.user) {
+      router.push('/sign-in');
+      return;
+    }
+    if (!product && (!cart || cart.length === 0)) {
+      router.push('/products');
+    }
+  }, [router, session, product, cart])
+  
+  if (!session) {
+    return null;
+  }
   return (
     <div className="flex flex-col items-center bg-gray-100 min-h-screen py-12 px-4">
       <h1 className="text-4xl text-gray-800 font-semibold mb-8">
-        Complete Your Payment
+        Complete Your Payment of ${amount}
       </h1>
       <div className="w-full max-w-lg bg-white shadow-lg rounded-xl p-8">
         <Elements
           stripe={stripePromise}
           options={{
             mode: "payment",
-            amount: convertToSubcurrency(Number(amount())),
+            amount: convertToSubcurrency(amount),
             currency: "usd",
           }}
         >
-          <Checkout amount={Number(amount())} />
+          <Checkout 
+            amount={amount} 
+            purchaseType={getPurchaseType()} 
+            handlePaymentSuccess={handlePaymentSuccess}
+            handlePaymentFailure={handlePaymentFailure} 
+          />
         </Elements>
       </div>
+
+      {/* Display Payment Status */}
+      {/* {paymentStatus === 'completed' && (
+        <div className="mt-4 text-green-600">
+          Payment Successful! Thank you for your order.
+        </div>
+      )}
+      {paymentStatus === 'failed' && (
+        <div className="mt-4 text-red-600">
+          Payment failed. Please try again.
+        </div>
+      )} */}
     </div>
   );
 };

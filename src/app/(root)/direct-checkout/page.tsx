@@ -15,20 +15,24 @@ const DirectCheckoutPage = () => {
   console.log("The product isssss",product)
 
   useEffect(() => {
-    // Redirect to sign in if not authenticated
+
     if (!session?.user) {
       router.push('./sign-in');
+      return;
     }
     console.log("The product in useeffect isssss",product)
     // Redirect to products if no product is selected
     if (!product) {
       router.push('/products');
+      return;
     }
 
     // Cleanup function to clear the product when leaving the page
-    return () => {
-      clearProduct();
-    };
+    // return () => {
+    //     if(product){
+    //         clearProduct();
+    //     }
+    // };
   }, [product, router, session, clearProduct]);
 
   if (!session || !product) {
@@ -77,9 +81,9 @@ const DirectCheckoutPage = () => {
           <Button variant="outline" onClick={() => router.push('/products')}>
             Cancel
           </Button>
-          <Link href="/checkout/payment">
+          <Link href="/checkout/shipping">
             <Button className="px-8 py-2">
-              Proceed to Payment
+              Proceed to Shipping
             </Button>
           </Link>
         </div>

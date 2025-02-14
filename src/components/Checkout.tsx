@@ -4,7 +4,7 @@ import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button';
 
-const Checkout = ({amount}: {amount: number}) => {
+const Checkout = ({amount, purchaseType, handlePaymentSuccess, handlePaymentFailure}: CheckoutProps) => {
 
     const stripe = useStripe();
     const elements = useElements();
@@ -14,16 +14,20 @@ const Checkout = ({amount}: {amount: number}) => {
     const [loading, setLoading] = useState(false);
     
     useEffect(() => {
+        // if (!amount || amount <= 0) {
+        //     setErrorMessage('Invalid amount');
+        //     return;
+        // }
         fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ amount: convertToSubcurrency(amount) }),
+            body: JSON.stringify({ amount: convertToSubcurrency(amount), purchaseType }),
         })
         .then((res) => res.json()) 
         .then((data) => setClientSecret(data.clientSecret))
-    }, [amount])
+    }, [amount, purchaseType])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -33,28 +37,44 @@ const Checkout = ({amount}: {amount: number}) => {
             return
         }
 
-        const {error: submitError } = await  elements.submit();
+        const {error: submitError } = await elements.submit();
 
         if(submitError){
             setErrorMessage(submitError.message);
             setLoading(false)
+            handlePaymentFailure();
             return;
         }
 
-        const { error } = await stripe.confirmPayment({
-            elements,
-            clientSecret,
-            confirmParams: {
-                return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
-            }
-        })
+        
+        console.log("Helloooooooooooooooooooooooooooooo")
+        console.log(stripe.confirmPayment)
 
-        if (error) {
-            // Show the error to the user (e.g., payment details incomplete)
-            setErrorMessage(error.message);
-        } else {
-            // The payment UI automatically closes with a success animation.
-            // Your customer is redirected to your `return_url`.
+
+        try {
+            const { error, paymentIntent } = await stripe.confirmPayment({
+                elements,
+                clientSecret,
+                confirmParams: {
+                    // return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
+                    return_url: `${window.location.origin}/payment-success?amount=${amount}`,
+                }, 
+                redirect: 'if_required',
+            })
+            console.log("Stripe Payment Confirmation Response:", { error, paymentIntent });
+    
+            if (error) {
+                console.log("Payment error:", error);
+                setErrorMessage(error.message);
+                handlePaymentFailure();
+            } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                console.log("Payment successful!");
+                await handlePaymentSuccess();
+            }
+        } catch (err) {
+            console.error("Payment error:", err);
+            setErrorMessage('An unexpected error occurred');
+            handlePaymentFailure();
         }
         setLoading(false);
     }

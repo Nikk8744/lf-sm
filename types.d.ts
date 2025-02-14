@@ -13,4 +13,12 @@ interface ProductCardProps {
     imageUrl?: string
     farmLocation: string
     quantity: number
+}
+
+
+interface CheckoutProps {
+    amount: number;
+    purchaseType: 'direct' | 'cart';
+    handlePaymentSuccess: () => void;
+    handlePaymentFailure: () => void;
   }
