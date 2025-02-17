@@ -42,6 +42,9 @@ function Header1() {
                   Products{" "}
                 </NavigationMenuLink>
               </NavigationMenuItem>
+              <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
+                <NavigationMenuLink href="/orders"> Orders </NavigationMenuLink>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>

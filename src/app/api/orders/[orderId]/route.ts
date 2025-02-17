@@ -1,0 +1,75 @@
+import { db } from "@/database/drizzle";
+import { orderItems, orders, products } from "@/database/schema";
+import { authOptions } from "@/lib/auth";
+import { and, eq } from "drizzle-orm";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(request: NextRequest, context: { params: { orderId: string }}) {
+    
+    try {
+        const session = await getServerSession(authOptions);
+        if(!session){
+            return new Response("Unauthorized", {status: 401})
+        };
+
+        // const { orderId } = await params;
+        // const orderId = context.params.orderId;
+        // Await the context to get the params before using them
+        const { params } = await Promise.resolve(context);
+        const { orderId } = await params;
+
+        // const order = await db.select().from(orders).where(eq(orders.id, params.orderId));
+        const order = await db.select().from(orders).where(
+            and(
+                eq(orders.id, orderId),
+                eq(orders.userId, session.user.id)
+            )
+        );
+
+        const items = await db.select({
+            id: orderItems.id,
+            productId: orderItems.productId,
+            quantity: orderItems.quantity,
+            unitPrice: orderItems.unitPrice,
+            totalPrice: orderItems.totalPrice,
+            createdAt: orderItems.createdAt,
+            // Join with products to get product details
+            productName: products.name,
+            productImage: products.image,
+        })
+        .from(orderItems)
+        .where(eq(orderItems.orderId, orderId))
+        .leftJoin(products, eq(orderItems.productId, products.id));
+
+        if(!order) {
+            return NextResponse.json(
+                {error: "Order not found"},
+                {status: 404}
+            )
+        }
+
+        const orderWithItems = {
+            ...order[0],
+            items: items.map(item => ({
+                id: item.id,
+                productId: item.productId,
+                name: item.productName,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                image: item.productImage,
+                createdAt: item.createdAt,
+            }))
+        };
+
+        // return NextResponse.json(order, {status: 200})
+        return NextResponse.json(orderWithItems, {status: 200})
+    } catch (error) {
+        console.log("Error fetching order", error)
+        return NextResponse.json(
+            {error: "Failed to fetch order"},
+            {status: 500}
+        )
+    }
+}

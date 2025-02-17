@@ -35,9 +35,12 @@ interface Order {
     orderStatus: 'PENDING' | 'SHIPPED' | 'DELIVERED'
     createdAt: Date
     updatedAt: Date
+    items: OrderItem[]
 }
 
 interface OrderItem {
+    image?: string | StaticImport;
+    name?: string;
     id: string
     productId: string
     orderId: string
@@ -45,4 +48,5 @@ interface OrderItem {
     unitPrice: number
     totalPrice: number
     createdAt: string
+    // name?: string
 }

@@ -1,4 +1,3 @@
-// src/app/payment-success/page.tsx (Order Confirmation Page)
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -7,80 +6,93 @@ import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+// type Order = {
+//   id: string;
+//   totalAmount: string;
+//   orderStatus: string;
+//   shippingAddress: string;
+// };
+
 const PaymentSuccess = () => {
   const router = useRouter();
-  //   const { searchParams } = router.query;
-  //   const amount = searchParams?.amount;
   const { cart, clearCart } = useCartStore();
   const { product, clearProduct } = useDirectPurchaseStore();
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
 
   useEffect(() => {
-    // so now we can first fetch order details before clearing cart and product
+    // Fetch order details
     const fetchOrderDetails = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/orders");
         if (response.ok) {
           const data = await response.json();
+          // Assuming the latest order is the first in the array
           setOrderDetails(data[0]);
         }
       } catch (error) {
-        console.log("Error while fetching order details", error);
+        console.error("Error while fetching order details", error);
       }
     };
+
     fetchOrderDetails();
 
-    // Clear cart and product on mount of success page
-    if (product) {
-      clearProduct();
-    }
-    if (cart && cart.length > 0) {
-      clearCart();
-    }
-  }, [cart, product, clearProduct, clearCart]);
+    // Clear cart and direct purchase product on mount
+    if (product) clearProduct();
+    if (cart && cart.length > 0) clearCart();
+  }, [cart, product, clearCart, clearProduct]);
 
   return (
-    <div className="container mx-auto p-8">
-      <h2 className="text-2xl font-bold">Payment Successfull!</h2>
-      <p className="mt-4">Thank you for your purchase.</p>
-      <p>Your order has been processed, and will be shipped soon.</p>
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold">Order Details:</h3>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+        <div className="flex flex-col items-center">
+          <div className="bg-green-100 rounded-full p-4">
+            <svg
+              className="w-12 h-12 text-green-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h2 className="mt-4 text-2xl font-bold text-gray-800">Payment Successful!</h2>
+          <p className="mt-2 text-gray-600 text-center">
+            Thank you for your purchase. Your order has been processed and will be shipped soon.
+          </p>
+        </div>
+
         {orderDetails && (
-          <div className="mb-8 text-left">
+          <div className="mt-6 border-t pt-4">
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">Order Details</h3>
             <div className="space-y-2">
-              <p>Order ID: {orderDetails.id}</p>
-              <p>Total Amount: ${orderDetails.totalAmount}</p>
-              <p>Status: {orderDetails.orderStatus}</p>
-              <p>Shipping Address: {orderDetails.shippingAddress}</p>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Order ID:</span>
+                <span className="text-gray-800">{orderDetails.id}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total Amount:</span>
+                <span className="text-gray-800">${orderDetails.totalAmount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Status:</span>
+                <span className="text-gray-800">{orderDetails.orderStatus}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Shipping Address:</span>
+                <span className="text-gray-800 text-right">{orderDetails.shippingAddress}</span>
+              </div>
             </div>
           </div>
         )}
-      </div>
-      <Button onClick={() => router.push("/")} className="mt-4">
-        Go Back to Home
-      </Button>
-      <div className="container mx-auto p-8">
-        <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">
-              Payment Successful!
-            </h2>
-            <div className="mb-8">
-              <p className="text-lg text-gray-700 mb-2">
-                Thank you for your purchase.
-              </p>
-              <p className="text-gray-600">
-                Your order has been processed and will be shipped soon.
-              </p>
-            </div>
-            <Button
-              onClick={() => router.push("/products")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg"
-            >
-              Continue Shopping
-            </Button>
-          </div>
+
+        <div className="mt-8 flex flex-col sm:flex-row sm:justify-center gap-4">
+          <Button onClick={() => router.push("/")} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg">
+            Go Home
+          </Button>
+          <Button onClick={() => router.push("/products")} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+            Continue Shopping
+          </Button>
         </div>
       </div>
     </div>
