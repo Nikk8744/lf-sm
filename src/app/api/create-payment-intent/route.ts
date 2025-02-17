@@ -1,3 +1,5 @@
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from 'stripe';
 // const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
@@ -5,7 +7,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
 export async function POST(request: NextRequest){
     try {
-        const { amount, purchaseType } = await request.json();
+
+        const session = await getServerSession(authOptions);
+        if(!session){
+            return new Response("Unauthorized", {status: 401})
+        };
+        
+        const { amount, purchaseType, items, shippingAddress } = await request.json();
         if (!amount || amount <= 0) {
             return NextResponse.json(
                 { error: 'Invalid amount' },
@@ -18,6 +26,9 @@ export async function POST(request: NextRequest){
             automatic_payment_methods: { enabled: true },
             metadata: {
                 purchaseType: purchaseType,
+                items: JSON.stringify(items),
+                shippingAddress,
+                userId: session.user.id,
             },
 
         })

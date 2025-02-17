@@ -18,12 +18,25 @@ const stripePromise = loadStripe(
 );
 
 const PaymentPage = () => {
-  const { cart, clearCart } = useCartStore();
-  const { product, clearProduct } = useDirectPurchaseStore();
+  const { cart} = useCartStore();
+  const { product} = useDirectPurchaseStore();
   const { data: session } = useSession();
   const router = useRouter();
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'completed' | 'failed'>('pending');
-  // const searchParams = useSearchParams();
+  const [shippingAddress, setShippingAddress] = useState("")
+
+  useEffect(() => {
+    // Get shipping details from localStorage
+    const shippingDetails = localStorage.getItem("shippingDetails");
+    if (shippingDetails) {
+      const details = JSON.parse(shippingDetails);
+      // Format the address
+      const formattedAddress = `${details.name}, ${details.address}, ${details.city}`;
+      // setShippingAddress(details);
+      setShippingAddress(formattedAddress);
+    }
+  }, []);
+
   const calculateAmount = () => {
     if (product) {
       return Number(product.price * product.quantity);
@@ -44,25 +57,8 @@ const PaymentPage = () => {
   const handlePaymentSuccess = async () => {
     setPaymentStatus('completed');
     router.push('/payment-success');
-  //   setTimeout(() => {
-  //     if(product){
-  //         clearProduct();
-  //     }
-  //     if(cart && cart.length > 0){
-  //         console.log("clearing the cartrttttttt")
-  //         clearCart();
-  //     }
-  // }, 100); // 100ms delay should be enough for the navigation to start
 
-    console.log("Payment Successfullllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
-    // if(product){
-    //   clearProduct();
-    // }
-    // if(cart && cart.length > 0){
-    //   console.log("clearing the cartrttttttt")
-    //   clearCart();
-    // }
-    // await new Promise(resolve => setTimeout(resolve, 100));
+    console.log("Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
   };
 
   const handlePaymentFailure = () => {
@@ -104,6 +100,7 @@ const PaymentPage = () => {
             purchaseType={getPurchaseType()} 
             handlePaymentSuccess={handlePaymentSuccess}
             handlePaymentFailure={handlePaymentFailure} 
+            shippingAddress={shippingAddress}
           />
         </Elements>
       </div>

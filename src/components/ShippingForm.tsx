@@ -31,8 +31,9 @@ const ShippingForm = () => {
   });
 
   const handleSubmit = (data: z.infer<typeof shippingDetailsSchema>) => {
+    const formattedAddress = `${data.name}, ${data.address}, ${data.city}`;
     // Store shipping details in local storage for later use
-    localStorage.setItem("shippingDetails", JSON.stringify(data));
+    localStorage.setItem("shippingDetails", JSON.stringify({...data, formattedAddress}));
     router.push("/checkout/payment");
   };
 

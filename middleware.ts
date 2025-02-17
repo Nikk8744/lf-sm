@@ -21,6 +21,10 @@ export default withAuth(
                     return true;
                 }
 
+                if(pathname.startsWith("/api/webhooks")){
+                    return true;
+                }
+
                 return !!token
             }
         }
@@ -33,5 +37,6 @@ export const config = {
     // '/profile/:profileId*',
     '/login',
     '/signup',
+    '/api/:path*',
     ]
 }

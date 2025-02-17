@@ -35,21 +35,66 @@ export async function POST(req: Request) {
         console.log(`PaymentIntent for ${paymentIntent.amount_received} was successful!`);
 
         // to get the purchase type from the metadata
-        const purchaseType = paymentIntent.metadata?.purchaseType;
+        // const purchaseType = paymentIntent.metadata?.purchaseType;
 
         // idhar you can update the order status in your database here
         // 1. Create order in your database
         // 2. Send confirmation email
         // 3. Update inventory - quantity ko update kr skte
         // 4. Any other post-payment processing
+        try {
+            const items = paymentIntent.metadata?.items 
+                ? JSON.parse(paymentIntent.metadata.items) 
+                : [];
+
+            const response = await fetch("http://localhost:3000/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    items,
+                    totalAmount: paymentIntent.amount / 100,
+                    shippingAddress: paymentIntent.metadata.shippingAddress || "",
+                    paymentIntentId: paymentIntent.id,
+                    paymentMethod: paymentIntent.payment_method_types[0],
+                    userId: paymentIntent.metadata.userId,
+                    isWebhook: true,
+                    // purchaseType,
+                }),
+            })
+
+            if(!response.ok){
+                const errorText = await response.text();
+                console.log("Error while creating order", errorText)
+            }
+
+            const order = await response.json();
+            console.log("Order created successfully", order)    
+
+            return NextResponse.json({ success: true, order: order.order });
+
+        } catch (error) {
+            console.log("error while createing order:", error)
+            return NextResponse.json(
+                { error: "Error while creating order" },
+                { status: 500 }
+            );
+        }
     }
 
     if (event.type === "payment_intent.payment_failed") {
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
         console.log(`PaymentIntent for ${paymentIntent.amount_received} has failedddddddd!`);
         // You can update the order status in your database here
+        return NextResponse.json({ 
+            success: false, 
+            error: "Payment failed" 
+        });
     }
     
 
-    return new NextResponse("Webhook received", { status: 200 });
+    return NextResponse.json({
+        received: true,
+    })
 }

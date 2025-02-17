@@ -3,11 +3,15 @@ import convertToSubcurrency from '@/lib/convertToSubcurrency';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import React, { useEffect, useState } from 'react'
 import { Button } from './ui/button';
+import { useCartStore } from '@/store/useCartStore';
+import { useDirectPurchaseStore } from '@/store/useDirectPurchaseStore';
 
-const Checkout = ({amount, purchaseType, handlePaymentSuccess, handlePaymentFailure}: CheckoutProps) => {
+const Checkout = ({amount, purchaseType, handlePaymentSuccess, handlePaymentFailure, shippingAddress}: CheckoutProps) => {
 
     const stripe = useStripe();
     const elements = useElements();
+    const { cart } = useCartStore();
+    const { product } = useDirectPurchaseStore();
     
     const [errorMessage, setErrorMessage] = useState<string>();
     const [clientSecret, setClientSecret] = useState("");
@@ -16,18 +20,19 @@ const Checkout = ({amount, purchaseType, handlePaymentSuccess, handlePaymentFail
     useEffect(() => {
         // if (!amount || amount <= 0) {
         //     setErrorMessage('Invalid amount');
-        //     return;
+        //     return;p
         // }
+        const items = purchaseType === 'direct' ? [product] : cart;
         fetch('/api/create-payment-intent', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ amount: convertToSubcurrency(amount), purchaseType }),
+            body: JSON.stringify({ amount: convertToSubcurrency(amount), purchaseType, items, shippingAddress }),
         })
         .then((res) => res.json()) 
         .then((data) => setClientSecret(data.clientSecret))
-    }, [amount, purchaseType])
+    }, [amount, purchaseType, cart, product, shippingAddress]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
