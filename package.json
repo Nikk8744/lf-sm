@@ -47,6 +47,7 @@
     "next": "15.1.6",
     "next-auth": "^4.24.11",
     "postgres": "^3.4.5",
+    "prettier": "^3.4.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-email": "^3.0.7",

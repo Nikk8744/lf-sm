@@ -57,7 +57,7 @@ export async function POST(req: Request) {
             
             // Fetch complete product details from database
             const itemsPromises = simplifiedItems.map(async (item: { id: string, qty: number }) => {
-                const [product] = await db
+             const [product] = await db
                     .select()
                     .from(products)
                     .where(eq(products.id, item.id));
@@ -102,24 +102,24 @@ export async function POST(req: Request) {
             const order = await response.json();
             console.log("Order created successfully", order)    
 
-            // const [user] = await db.select().from(users).where(eq(users.id, paymentIntent.metadata.userId));
-            // if(!user.email){
-            //     throw new Error("User email not found")
-            // }
+            const [user] = await db.select().from(users).where(eq(users.id, paymentIntent.metadata.userId));
+            if(!user.email){
+                throw new Error("User email not found")
+            }
 
-            // await sendOrderConfirmationEmail({
-            //     to: user?.email,
-            //     orderNumber: order.id,
-            //     customerName: /* user?.name ||*/ "Valued Customer",
-            //     orderItems: items.map((item: any) => ({
-            //         name: item.productId,
-            //         quantity: item.quantity,
-            //         unitPrice: item.price.toString(),
-            //         totalPrice: (item.price * item.quantity).toString(),
-            //     })),
-            //     totalAmount: (paymentIntent.amount / 100).toString(),
-            //     shippingAddress: paymentIntent.metadata.shippingAddress || "",
-            // })
+            await sendOrderConfirmationEmail({
+                to: user?.email,
+                orderNumber: order.id,
+                customerName: /* user?.name ||*/ "Valued Customer",
+                orderItems: completeItems.map((item: any) => ({
+                    name: item.productId,
+                    quantity: item.quantity,
+                    unitPrice: item.price.toString(),
+                    totalPrice: (item.price * item.quantity).toString(),
+                })),
+                totalAmount: (paymentIntent.amount / 100).toString(),
+                shippingAddress: paymentIntent.metadata.shippingAddress || "",
+            })
 
 
             return NextResponse.json({ success: true, order: order.order });
