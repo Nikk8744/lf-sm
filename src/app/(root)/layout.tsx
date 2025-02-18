@@ -2,15 +2,20 @@
 import React from 'react'
 import { Header1 } from '@/components/ui/header'
 import Footer from '@/components/Footer'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen flex flex-col bg-[#EEEEEE]">
-      <div className='mb-24'>
+      {/* <SidebarProvider>
+      <SidebarInset> */}
+      <div className='mb-20'>
       <Header1 />
       </div>
       <main className="flex-grow pt-22">{children}</main>
       <Footer />
+      {/* </SidebarInset>
+      </SidebarProvider> */}
     </div>
   )
 }

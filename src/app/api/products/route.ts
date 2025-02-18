@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
         const category = searchParams.get("category");
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
+        const farmLocation = searchParams.get("farmLocation");
         const filters = [];
 
         if(query) {
@@ -45,6 +46,10 @@ export async function GET(request: NextRequest) {
 
         if(maxPrice && !isNaN(Number(maxPrice))) {
             filters.push(sql`CAST(${products.price} AS DECIMAL) <= ${Number(maxPrice)}`)
+        }
+
+        if(farmLocation && farmLocation !== "") {
+            filters.push(sql`LOWER(${products.farmLocation}) = LOWER(${farmLocation})`)
         }
 
         const whereClause = filters.length > 0 ? and(...filters) : undefined;
