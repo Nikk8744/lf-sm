@@ -53,17 +53,18 @@ export async function GET(request: NextRequest) {
         }
 
         const whereClause = filters.length > 0 ? and(...filters) : undefined;
-        console.log("Filters:", filters);
-        console.log("Category value:", category);
-        console.log("Generated SQL:", whereClause);
-        console.log("The where clause issss",whereClause)
+        // console.log("Filters:", filters);
+        // console.log("Category value:", category);
+        // console.log("Generated SQL:", whereClause);
+        // console.log("The where clause issss",whereClause)
 
         const allProducts = await db
             .select()
             .from(products)
             .where(whereClause)
             .orderBy(desc(products.createdAt))
-        console.log("The products are here",allProducts)
+        // console.log("The products are here",allProducts)
+
         if(!allProducts || allProducts.length === 0){
             return NextResponse.json(
                 {error: "No Products Found"}, 

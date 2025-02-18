@@ -19,6 +19,13 @@ export async function POST(request: NextRequest) {
             };
         }
 
+        if (!userId || !totalAmount || !shippingAddress || !paymentIntentId || !items?.length) {
+            console.error("Missing required fields:", { userId, totalAmount, shippingAddress, paymentIntentId, itemsLength: items?.length });
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
+        }
         // console.log("The req body is", reqBody)
         const authenticatedUserId = userId;
 
@@ -31,9 +38,10 @@ export async function POST(request: NextRequest) {
             paymentStatus: "COMPLETED",
             orderStatus: "PENDING",
         }).returning();
-
+        console.log("The new oprder issss",newOrder)
 
         for(const item of items){
+            console.log("Items are::", item)
             await db.insert(orderItems).values({
                 orderId: newOrder.id,
                 productId: item.productId,
@@ -72,7 +80,7 @@ export async function GET() {
         };
 
         const userOrders = await db.select().from(orders).where(eq(orders.userId, session.user.id)).orderBy(desc(orders.createdAt)) as Order[];
-
+        console.log("The user orders are",userOrders)
         return NextResponse.json(userOrders, {status: 200})
     } catch (error) {
         console.log("error while fetching orders", error);

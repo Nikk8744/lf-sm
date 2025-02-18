@@ -40,7 +40,7 @@ interface Order {
 
 interface OrderItem {
     image?: string | StaticImport;
-    name?: string;
+    name: string;
     id: string
     productId: string
     orderId: string
@@ -50,3 +50,34 @@ interface OrderItem {
     createdAt: string
     // name?: string
 }
+interface OrderItemForEmail {
+    name: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+}
+interface OrderConfirmationEmailProps {
+    orderNumber: string;
+    customerName: string;
+    orderItems: OrderItemForEmail[];
+    totalAmount: string;
+    shippingAddress: string;
+    // paymentMethod: string;
+    // paymentStatus: string;
+    // orderStatus?: string;
+    // orderDate?: string;
+}
+
+interface SendOrderConfirmationEmailParams {
+    to: string;
+    orderNumber: string;
+    customerName: string;
+    orderItems: {
+      name: string;
+      quantity: number;
+      unitPrice: string;
+      totalPrice: string;
+    }[];
+    totalAmount: string;
+    shippingAddress: string;
+  }

@@ -28,7 +28,9 @@ const PaymentSuccess = () => {
           const data = await response.json();
           // Assuming the latest order is the first in the array
           setOrderDetails(data[0]);
+          console.log("The response isdss::", data)
         }
+        console.log("The order details are:", orderDetails);
       } catch (error) {
         console.error("Error while fetching order details", error);
       }

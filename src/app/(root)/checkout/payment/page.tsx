@@ -59,6 +59,7 @@ const PaymentPage = () => {
     router.push('/payment-success');
 
     console.log("Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
+    // await send
   };
 
   const handlePaymentFailure = () => {

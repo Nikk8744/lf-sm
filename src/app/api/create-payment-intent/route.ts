@@ -12,7 +12,7 @@ export async function POST(request: NextRequest){
         if(!session){
             return new Response("Unauthorized", {status: 401})
         };
-        
+
         const { amount, purchaseType, items, shippingAddress } = await request.json();
         if (!amount || amount <= 0) {
             return NextResponse.json(
@@ -20,13 +20,21 @@ export async function POST(request: NextRequest){
                 { status: 400 }
             );
         }
+        // Simplify items data to reduce metadata size
+        const simplifiedItems = items.map((item: any) => ({
+            id: item.productId,
+            qty: item.quantity,
+        }));
+
         const paymentIntent = await stripe.paymentIntents.create({
             amount: amount,
             currency: "usd",
             automatic_payment_methods: { enabled: true },
             metadata: {
                 purchaseType: purchaseType,
-                items: JSON.stringify(items),
+                // items: JSON.stringify(items),
+                itemsCount: items.length.toString(),
+                itemsJson: JSON.stringify(simplifiedItems),
                 shippingAddress,
                 userId: session.user.id,
             },

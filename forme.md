@@ -44,7 +44,7 @@ Web-hooks
 - make a component for the auth(sign/signup)
 - track order
 - cart notification
-- send emailmail - jsx email
+- send email mail 
 - order history
 
 

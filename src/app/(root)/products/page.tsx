@@ -2,7 +2,7 @@
 import { ProductCard } from "@/components/ProductCard";
 import SearchBar from "@/components/SearchBar";
 import SidebarFilter from "@/components/SidebarFilter";
-import SidebarFilter1 from "@/components/SidebarFilter1";
+// import SidebarFilter1 from "@/components/SidebarFilter1";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";

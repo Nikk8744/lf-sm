@@ -15,6 +15,7 @@ const OrderDetailPage = () => {
 
     useEffect(() => {
         if(!orderId) return;
+
         const fetchOrderDetails = async () => {
         try {
             const response = await fetch(`/api/orders/${orderId}`, {
@@ -23,9 +24,11 @@ const OrderDetailPage = () => {
                     "Content-Type": "application/json",
                 },
             });
+            
             if(!response.ok){
                 throw new Error("Failed to fetch order details")
             }
+            
             const order = await response.json();
             setOrder(order)
         } catch (error) {
@@ -60,7 +63,7 @@ const OrderDetailPage = () => {
           </p>
           <p className="text-lg text-gray-800">
             <span className="font-semibold">Date:</span>{" "}
-            {new Date(order?.createdAt).toLocaleDateString()}
+            {new Date(order?.createdAt as Date).toLocaleDateString()}
           </p>
           <p className="text-lg text-gray-800">
             <span className="font-semibold">Total Amount:</span> ${order?.totalAmount}
@@ -80,7 +83,7 @@ const OrderDetailPage = () => {
         </div>
         <div className="mt-8">
           <h3 className="text-3xl font-bold text-gray-900 mb-4">Items</h3>
-          {order?.items.length === 0 ? (
+           {order?.items.length === 0 ? (
             <p className="text-lg text-gray-700">No items found for this order.</p>
           ) : (
             <div className="space-y-6">

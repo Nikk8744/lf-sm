@@ -2,7 +2,7 @@
 import React from 'react'
 import { Header1 } from '@/components/ui/header'
 import Footer from '@/components/Footer'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+// import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (

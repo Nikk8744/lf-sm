@@ -1,4 +1,8 @@
+import { db } from "@/database/drizzle";
+import { products, users } from "@/database/schema";
+import { sendOrderConfirmationEmail } from "@/lib/resend";
 import { stripe } from "@/lib/stripe";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -18,6 +22,7 @@ export async function POST(req: Request) {
         );
         // console.log("Event::", event);
     } catch (error) {
+        console.error("Webhook signature verification failed:", error);
         return new NextResponse(`invalid signature: ${error}`, { status: 400 });
     }
 
@@ -42,10 +47,35 @@ export async function POST(req: Request) {
         // 2. Send confirmation email
         // 3. Update inventory - quantity ko update kr skte
         // 4. Any other post-payment processing
+
         try {
-            const items = paymentIntent.metadata?.items 
-                ? JSON.parse(paymentIntent.metadata.items) 
-                : [];
+            // const items = paymentIntent.metadata?.items 
+            //     ? JSON.parse(paymentIntent.metadata.items) 
+            //     : [];
+            // Parse the simplified items from metadata
+            const simplifiedItems = JSON.parse(paymentIntent.metadata.itemsJson || '[]');
+            
+            // Fetch complete product details from database
+            const itemsPromises = simplifiedItems.map(async (item: { id: string, qty: number }) => {
+                const [product] = await db
+                    .select()
+                    .from(products)
+                    .where(eq(products.id, item.id));
+
+                return {
+                    productId: product.id,
+                    // name: product.name,
+                    price: parseFloat(product.price),
+                    quantity: item.qty,
+                    // imageUrl: product.image,
+                    // farmLocation: product.farmLocation
+                };
+            });
+
+            console.log("The item promises are",itemsPromises)
+
+            const completeItems = await Promise.all(itemsPromises);
+            console.log("The complete items are",completeItems)
 
             const response = await fetch("http://localhost:3000/api/orders", {
                 method: "POST",
@@ -53,7 +83,7 @@ export async function POST(req: Request) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    items,
+                    items: completeItems,
                     totalAmount: paymentIntent.amount / 100,
                     shippingAddress: paymentIntent.metadata.shippingAddress || "",
                     paymentIntentId: paymentIntent.id,
@@ -71,6 +101,26 @@ export async function POST(req: Request) {
 
             const order = await response.json();
             console.log("Order created successfully", order)    
+
+            // const [user] = await db.select().from(users).where(eq(users.id, paymentIntent.metadata.userId));
+            // if(!user.email){
+            //     throw new Error("User email not found")
+            // }
+
+            // await sendOrderConfirmationEmail({
+            //     to: user?.email,
+            //     orderNumber: order.id,
+            //     customerName: /* user?.name ||*/ "Valued Customer",
+            //     orderItems: items.map((item: any) => ({
+            //         name: item.productId,
+            //         quantity: item.quantity,
+            //         unitPrice: item.price.toString(),
+            //         totalPrice: (item.price * item.quantity).toString(),
+            //     })),
+            //     totalAmount: (paymentIntent.amount / 100).toString(),
+            //     shippingAddress: paymentIntent.metadata.shippingAddress || "",
+            // })
+
 
             return NextResponse.json({ success: true, order: order.order });
 
