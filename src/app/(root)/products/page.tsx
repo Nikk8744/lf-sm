@@ -48,7 +48,7 @@ const ProductsPage = () => {
         }
 
       } catch (error) {
-        setError("Failed to fetch products:", error);
+        setError(`Failed to fetch products: ${error}`);
       } finally {
         setLoading(false) 
       }
