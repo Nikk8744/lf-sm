@@ -33,13 +33,24 @@ const ShippingForm = () => {
   const handleSubmit = (data: z.infer<typeof shippingDetailsSchema>) => {
     const formattedAddress = `${data.name}, ${data.address}, ${data.city}`;
     // Store shipping details in local storage for later use
-    localStorage.setItem("shippingDetails", JSON.stringify({...data, formattedAddress}));
+    const shippingDetails = { ...data, formattedAddress };
+    window.localStorage.setItem(
+      "shippingDetails",
+      JSON.stringify(shippingDetails)
+    );
+
+    // Verify storage
+    const stored = window.localStorage.getItem("shippingDetails");
+    console.log("Stored shipping details:", stored); // Debug log
+
     router.push("/checkout/payment");
   };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
-      <h1 className="text-3xl font-semibold text-center mb-6">Shipping Information</h1>
+      <h1 className="text-3xl font-semibold text-center mb-6">
+        Shipping Information
+      </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <FormField
@@ -66,7 +77,9 @@ const ShippingForm = () => {
                 <FormControl>
                   <Input placeholder="123 Main St" {...field} />
                 </FormControl>
-                <FormDescription>This is where we will deliver your products.</FormDescription>
+                <FormDescription>
+                  This is where we will deliver your products.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -103,7 +116,9 @@ const ShippingForm = () => {
           />
 
           <div className="flex justify-end">
-            <Button type="submit" className="mt-4">Proceed to Payment</Button>
+            <Button type="submit" className="mt-4">
+              Proceed to Payment
+            </Button>
           </div>
         </form>
       </Form>

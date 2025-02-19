@@ -27,59 +27,65 @@ export async function POST(request: NextRequest) {
             }
         }
 
+        // Check inventory for all items in a transaction-like manner
+        const inventoryChecks = await Promise.all(
+            items.map(async (item) => {
+                const [product] = await db
+                    .select()
+                    .from(products)
+                    .where(eq(products.id, item.productId));
+
+                if (!product) {
+                    throw new Error(`Product ${item.productId} not found`);
+                }
+
+                const availableQuantity = product.quantity || 0;
+                if (availableQuantity < item.quantity) {
+                    throw new Error(`Insufficient inventory for product ${product.name}`);
+                }
+
+                return {
+                    ...item,
+                    currentStock: availableQuantity
+                };
+            })
+        );
+
 
         // console.log("The req body is", reqBody)
         // const authenticatedUserId = userId;
 
         // const result = await db.transaction(async (tx) => {
-            // creating the order
-            const [newOrder] = await db.insert(orders).values({
-                userId,
-                totalAmount: totalAmount.toString(),
-                shippingAddress,
-                paymentMethod,
-                paymentIntentId,
-                paymentStatus: "COMPLETED",
-                orderStatus: "PENDING",
-            }).returning();
-            console.log("The new oprder issss", newOrder)
-    
-            // creating the order items and updating the product quantity
-            for (const item of items) {
-                console.log("Items are::", item)
-    
-                // verify product exists and has enough quantity
-                const [product] = await db
-                    .select()
-                    .from(products)
-                    .where(eq(products.id, item.productId));
-    
-                if (!product) {
-                    throw new Error(`Product ${item.productId} not found`);
-                    continue;
-                }
-    
-                if ((product.quantity || 0) < item.quantity) {
-                    throw new Error(`Insufficient inventory for product ${product.name}`);
-                    continue;
-                }
-    
-                // create order item 
-                await db.insert(orderItems).values({
-                    orderId: newOrder.id,
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    unitPrice: item.price.toString(),
-                    totalPrice: (item.price * item.quantity).toString(),
+        // creating the order
+        const [newOrder] = await db.insert(orders).values({
+            userId,
+            totalAmount: totalAmount.toString(),
+            shippingAddress,
+            paymentMethod,
+            paymentIntentId,
+            paymentStatus: "COMPLETED",
+            orderStatus: "PENDING",
+        }).returning();
+        console.log("The new oprder issss", newOrder)
+
+        // creating the order items and updating the product quantity
+        await Promise.all(items.map(async (item) => {
+            // Create order item
+            await db.insert(orderItems).values({
+                orderId: newOrder.id,
+                productId: item.productId,
+                quantity: item.quantity,
+                unitPrice: item.price.toString(),
+                totalPrice: (item.price * item.quantity).toString(),
+            });
+
+            // Update inventory
+            await db.update(products)
+                .set({
+                    quantity: sql`quantity - ${item.quantity}`,
                 })
-                // update product quantity
-                await db.update(products).set({
-                    quantity: sql`${products.quantity} - ${item.quantity}`
-                    // quantity: products.quantity - item.quantity,
-                }).where(eq(products.id, item.productId))
-            };
-            // return newOrder;
-        // })
+                .where(eq(products.id, item.productId));
+        }));
 
         return NextResponse.json({
             success: true,

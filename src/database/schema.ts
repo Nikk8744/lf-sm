@@ -36,7 +36,8 @@ export const orders = pgTable('orders', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
     userId: uuid('user_id').notNull().references(() => users.id),
     totalAmount: decimal('total_amount').notNull(),
-    shippingAddress: text('shipping_address').notNull().references(() => userAddress.id),
+    // shippingAddress: uuid('shipping_address').notNull().references(() => userAddress.id),
+    shippingAddress: text('shipping_address').notNull(),
     paymentStatus: PAYMENT_STATUS_ENUM('payment_status').default('PENDING'),
     paymentMethod: varchar('payment_method').notNull(), // You can add more payment method types as needed
     paymentIntentId: varchar('payment_intent_id').notNull(), // Stripe PaymentIntent ID

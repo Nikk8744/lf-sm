@@ -10,44 +10,42 @@ import Stripe from "stripe";
 
 async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     try {
-        // const items = paymentIntent.metadata?.items 
-        //     ? JSON.parse(paymentIntent.metadata.items) 
-        //     : [];
-
         validatePaymentIntent(paymentIntent);
 
         // Parse the simplified items from metadata
+        console.log("Raw metadata:", paymentIntent.metadata);
         const simplifiedItems = JSON.parse(paymentIntent.metadata.itemsJson || '[]');
+        console.log("Parsed items:", simplifiedItems);
 
-        // Fetch and validate all products details from databse
+        const shippingAddress = paymentIntent.metadata.shippingAddress;
+        if (!shippingAddress) {
+            throw new Error('Shipping address not found in payment intent metadata');
+        }     
+
+        // If we get here, we know we have enough inventory
         const completeItems = await Promise.all(
-            simplifiedItems.map(async (item: { id: string, qty: number }) => {
+            simplifiedItems.map(async (item) => {
                 const [product] = await db
                     .select()
                     .from(products)
-                    .where(eq(products.id, item.id));
+                    .where(eq(products.id, item.productId));
 
                 if (!product) {
-                    throw new Error(`Product ${item.id} not found`);
-                }
-
-                if ((product.quantity || 0) < item.qty) {
-                    throw new Error(`Insufficient inventory for product ${product.name}`);
+                    throw new Error(`Product ${item.productId} not found`);
                 }
 
                 return {
-                    productId: item.id,
-                    quantity: item.qty,
+                    productId: product.id,
+                    quantity: item.quantity,
                     price: parseFloat(product.price),
-                    // name: product.name,
-                    // imageUrl: product.image,
-                    // farmLocation: product.farmLocation
+                    name: product.name
                 };
             })
         );
 
         const orderData = {
             items: completeItems,
+            // items: simplifiedItems,
             totalAmount: paymentIntent.amount / 100,
             shippingAddress: paymentIntent.metadata.shippingAddress,
             paymentIntentId: paymentIntent.id,
@@ -64,7 +62,19 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
 
         if (!orderResponse.ok) {
             const errorText = await orderResponse.text();
-            throw new Error(`Failed to create order: ${errorText}`);
+            const errorData = JSON.parse(errorText);
+            
+            // If it's an inventory error, we should handle it specially
+            if (errorData.error && errorData.error.includes("Insufficient inventory")) {
+                // Initiate refund
+                await stripe.refunds.create({
+                    payment_intent: paymentIntent.id,
+                    reason: 'requested_by_customer',
+                });
+                console.log("Payment refunded due to insufficient inventory");
+            }
+            
+            throw new Error(errorData.error || 'Failed to create order');
         }
 
         const orderResult = await orderResponse.json();
@@ -223,7 +233,7 @@ export async function POST(req: Request) {
 }
 
 
-export async function OPTIONS(req: Request) {
+export async function OPTIONS() {
     return new NextResponse(null, {
         status: 200,
         headers: {

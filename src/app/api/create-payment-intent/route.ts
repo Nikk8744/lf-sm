@@ -13,6 +13,7 @@ export async function POST(request: NextRequest){
             return new Response("Unauthorized", {status: 401})
         };
 
+        
         const { amount, purchaseType, items, shippingAddress } = await request.json();
         if (!amount || amount <= 0) {
             return NextResponse.json(
@@ -20,10 +21,29 @@ export async function POST(request: NextRequest){
                 { status: 400 }
             );
         }
+        
+        console.log("Received shipping address:", shippingAddress);
+
+        if (!shippingAddress) {
+            return NextResponse.json(
+                { error: 'Shipping address is required' },
+                { status: 400 }
+            );
+        }
+
+        console.log("The shipping address in payment intentttt issssssssssssssss :", shippingAddress)
+
+        const shippingAddressString = typeof shippingAddress === 'object' 
+            ? JSON.stringify(shippingAddress)
+            : shippingAddress;
+
+        // Debug log
+        console.log("Shipping address to be stored in metadata:", shippingAddressString);
+
         // Simplify items data to reduce metadata size
-        const simplifiedItems = items.map((item: any) => ({
-            id: item.productId,
-            qty: item.quantity,
+        const simplifiedItems = items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
         }));
 
         const paymentIntent = await stripe.paymentIntents.create({
@@ -35,11 +55,12 @@ export async function POST(request: NextRequest){
                 // items: JSON.stringify(items),
                 itemsCount: items.length.toString(),
                 itemsJson: JSON.stringify(simplifiedItems),
-                shippingAddress,
+                shippingAddress: shippingAddress,
                 userId: session.user.id,
             },
 
         })
+        console.log("Created payment intent with metadata:", paymentIntent.metadata);
 
         return NextResponse.json({clientSecret: paymentIntent.client_secret })
     } catch (error) {

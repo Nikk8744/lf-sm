@@ -39,7 +39,7 @@ const OrderConfirmationEmail = ({
 
             <Section className="mt-4">
               <Heading as="h2" className="text-xl font-semibold">
-                Order #{orderNumber}
+                Order ID: #{orderNumber}
               </Heading>
             </Section>
 
@@ -58,7 +58,7 @@ const OrderConfirmationEmail = ({
                     )}
                   </Column>
                   <Column>
-                    <Text className="font-semibold">{item.name}</Text>
+                    <Text className="font-semibold">Item:{item.name}</Text>
                     <Text>Quantity: {item.quantity}</Text>
                     <Text>Price: ${item.unitPrice}</Text>
                     <Text>Total: ${item.totalPrice}</Text>

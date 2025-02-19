@@ -1,5 +1,5 @@
 import OrderConfirmationEmail from "@/emails/OrderConfirmation";
-import { render } from "@react-email/components";
+// import { render } from "@react-email/components";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);

@@ -33,6 +33,7 @@ const PaymentPage = () => {
       // Format the address
       const formattedAddress = details.formattedAddress || `${details.name}, ${details.address}, ${details.city}`;
       // setShippingAddress(details);
+      console.log("The shipping address is:", formattedAddress);
       setShippingAddress(formattedAddress);
     } else {
       // Redirect to shipping page if no shipping details are found

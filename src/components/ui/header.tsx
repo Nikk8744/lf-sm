@@ -16,14 +16,20 @@ import { ShoppingCart } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { useCartStore } from "@/store/useCartStore";
+import { Badge } from "./badge";
 
 function Header1() {
   const [isOpen, setOpen] = useState(false);
   const { data: session } = useSession();
+  const cart = useCartStore((state) => state.cart);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  // Calculate total items in cart
+  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
+
   const handleLogout = async () => {
-    await signOut({ redirect: true, callbackUrl: '/' }); // Optionally redirect to home after logout
+    await signOut({ redirect: true, callbackUrl: "/" }); // Optionally redirect to home after logout
   };
 
   return (
@@ -56,9 +62,18 @@ function Header1() {
         </div>
 
         <div className="flex justify-end w-full gap-4">
-          <Link href="/cart">
-            <Button variant="ghost" className="flex gap-2 text-center">
-              <ShoppingCart /> <p className="text-base font-semibold">Cart</p>
+        <Link href="/cart">
+            <Button variant="ghost" className="flex gap-2 text-center relative">
+              <ShoppingCart />
+              <p className="text-base font-semibold">Cart</p>
+              {cartItemsCount > 0 && (
+                <Badge 
+                  variant="myVariant" 
+                  className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-1 text-xs"
+                >
+                  {cartItemsCount}
+                </Badge>
+              )}
             </Button>
           </Link>
 
@@ -66,27 +81,33 @@ function Header1() {
             <>
               <div className="border-r hidden md:inline"></div>
               <div className="flex items-center gap-2">
-              <Popover>
-              <PopoverTrigger asChild>
-                <button>
-                  <Avatar>
-                    <AvatarImage src={session.user?.image ?? "/default-avatar.png"} alt="User Avatar" />
-                    <AvatarFallback>U</AvatarFallback>
-                  </Avatar>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 bg-white p-4 shadow-lg rounded-md">
-                <Link href="/user-details">
-                  <Button variant='outline' className="w-full text-left">
-                    User Details
-                  </Button>
-                </Link>
-                <Button variant='default' className="w-full mt-2" onClick={handleLogout}>
-                  Log Out
-                </Button>
-              </PopoverContent>
-            </Popover>
-
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button>
+                      <Avatar>
+                        <AvatarImage
+                          src={session.user?.image ?? "/default-avatar.png"}
+                          alt="User Avatar"
+                        />
+                        <AvatarFallback>U</AvatarFallback>
+                      </Avatar>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 bg-white p-4 shadow-lg rounded-md">
+                    <Link href="/user-details">
+                      <Button variant="outline" className="w-full text-left">
+                        User Details
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="default"
+                      className="w-full mt-2"
+                      onClick={handleLogout}
+                    >
+                      Log Out
+                    </Button>
+                  </PopoverContent>
+                </Popover>
               </div>
             </>
           ) : (

@@ -15,6 +15,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/hooks/use-toast";
 
 export function ProductCard({
   id,
@@ -27,6 +28,7 @@ export function ProductCard({
   const addToCart = useCartStore((state) => state.addToCart);
   const router = useRouter();
   const session = useSession();
+  const { toast } = useToast();
   const { setProduct } = useDirectPurchaseStore();
 
   // console.log("The session isssss",session)
@@ -43,7 +45,13 @@ export function ProductCard({
       imageUrl,
       farmLocation,
     });
-    alert("Product added to cart!!!");
+
+
+    toast({
+      title: "Added to Cart",
+      description: `${name} has been added to your cart`,
+      duration: 2000,
+    });
   };
   
   const handleBuyNow = () => {
