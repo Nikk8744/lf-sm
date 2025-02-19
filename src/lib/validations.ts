@@ -29,3 +29,23 @@ export const productSchema = z.object({
 
 export const productUpdateSchema = productSchema.partial();
 
+export const createOrderSchema = z.object({
+  items: z.array(z.object({
+      productId: z.string(),
+      quantity: z.number().positive(),
+      price: z.number().positive(),
+  })),
+  totalAmount: z.number().positive(),
+  shippingAddress: z.string(),
+  paymentMethod: z.string(),
+  paymentIntentId: z.string(),
+  userId: z.string(),
+  isWebhook: z.boolean().optional(),
+});
+
+export const orderItemSchema = z.object({
+  productId: z.string(),
+  quantity: z.number().positive(),
+  unitPrice: z.string(),
+  totalPrice: z.string(),
+});

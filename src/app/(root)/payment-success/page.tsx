@@ -30,18 +30,18 @@ const PaymentSuccess = () => {
           setOrderDetails(data[0]);
           console.log("The response isdss::", data)
         }
-        console.log("The order details are:", orderDetails);
       } catch (error) {
         console.error("Error while fetching order details", error);
       }
     };
-
+    
     fetchOrderDetails();
-
+    
     // Clear cart and direct purchase product on mount
     if (product) clearProduct();
     if (cart && cart.length > 0) clearCart();
   }, [cart, product, clearCart, clearProduct]);
+  console.log("The order details are:", orderDetails);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">

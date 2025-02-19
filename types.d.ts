@@ -55,8 +55,10 @@ interface OrderItemForEmail {
     quantity: number;
     unitPrice: string;
     totalPrice: string;
+    image?: string;
 }
 interface OrderConfirmationEmailProps {
+    to?: string;
     orderNumber: string;
     customerName: string;
     orderItems: OrderItemForEmail[];
@@ -73,11 +75,11 @@ interface SendOrderConfirmationEmailParams {
     orderNumber: string;
     customerName: string;
     orderItems: {
-      name: string;
-      quantity: number;
-      unitPrice: string;
-      totalPrice: string;
+        name: string;
+        quantity: number;
+        unitPrice: string;
+        totalPrice: string;
     }[];
     totalAmount: string;
     shippingAddress: string;
-  }
+}

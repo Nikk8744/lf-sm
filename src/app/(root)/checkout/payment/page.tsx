@@ -31,11 +31,14 @@ const PaymentPage = () => {
     if (shippingDetails) {
       const details = JSON.parse(shippingDetails);
       // Format the address
-      const formattedAddress = `${details.name}, ${details.address}, ${details.city}`;
+      const formattedAddress = details.formattedAddress || `${details.name}, ${details.address}, ${details.city}`;
       // setShippingAddress(details);
       setShippingAddress(formattedAddress);
+    } else {
+      // Redirect to shipping page if no shipping details are found
+      router.push('/checkout/shipping');
     }
-  }, []);
+  }, [router]);
 
   const calculateAmount = () => {
     if (product) {
