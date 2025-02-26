@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
+import ProductReview from "@/components/ProductReview";
 
 interface ProductDetailsProps {
   id: string;
@@ -244,6 +245,7 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+      <ProductReview productId={product.id} />
     </div>
   );
 };

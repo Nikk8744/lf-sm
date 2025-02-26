@@ -6,6 +6,7 @@ import AuthForm from "@/components/AuthForm";
 import { signUpSchema } from "@/lib/validations";
 
 interface FormValues {
+  name: string;
   email: string;
   password: string;
 }

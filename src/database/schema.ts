@@ -4,6 +4,7 @@ export const ROLE_ENUM = pgEnum('role', ['ADMIN', 'USER']);
 
 export const users = pgTable('users', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    name: text('name').notNull().default('User'),
     email: text('email').notNull().unique(),
     password: text('password').notNull(),
     role: ROLE_ENUM('role').default('USER'),
@@ -63,6 +64,17 @@ export const orderItems = pgTable('orderItems', {
     totalPrice: decimal('total_price').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const review = pgTable('reviews', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    userId: uuid('user_id').notNull().references(() => users.id),
+    productId: uuid('product_id').notNull().references(() => products.id),
+    rating: integer('rating').notNull(),
+    comment: text('comment'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
 
 /* 
 Tables to create

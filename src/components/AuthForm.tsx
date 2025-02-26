@@ -1,50 +1,56 @@
-"use client"
-import React from 'react'
+"use client";
+import React from "react";
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-  } from "@/components/ui/form";
-import { useForm } from 'react-hook-form';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 // import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { zodResolver } from '@hookform/resolvers/zod';
-
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface FormValues {
-    email: string;
-    password: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 interface AuthFormProps {
-    onSubmit: (data: FormValues) => Promise<void>;
-    title: string;
-    buttonText: string;
-    linkText: string;
-    linkHref: string;
-    schema: any;
-    
+  onSubmit: (data: FormValues) => Promise<void>;
+  title: string;
+  buttonText: string;
+  linkText: string;
+  linkHref: string;
+  schema: any;
 }
 
+const AuthForm = ({
+  onSubmit,
+  title,
+  buttonText,
+  linkText,
+  linkHref,
+  schema,
+}: AuthFormProps) => {
+  // const router = useRouter()
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
 
+  const isSignUp = buttonText.toLowerCase() === "sign-up";
 
-const AuthForm = ({ onSubmit, title, buttonText, linkText, linkHref, schema }: AuthFormProps) => {
-
-    // const router = useRouter()
-    const form = useForm<FormValues>({
-        resolver: zodResolver(schema),
-        defaultValues: {
-          email: "",
-          password: "",
-        },
-      });
-    
   return (
     <div className="w-full max-w-md mx-auto p-4">
       <p className="text-center font-medium text-lg font-mono text-black p-3">
@@ -52,6 +58,22 @@ const AuthForm = ({ onSubmit, title, buttonText, linkText, linkHref, schema }: A
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {isSignUp && (
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormDescription>Enter your full name.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="email"
@@ -107,12 +129,15 @@ const AuthForm = ({ onSubmit, title, buttonText, linkText, linkHref, schema }: A
       </Form>
       <p className="text-center text-base font-semibold p-3">
         {/* {linkText}{" "} */}
-        <Link href={linkHref} className="text-bold text-blue-500 hover:text-red-400">
+        <Link
+          href={linkHref}
+          className="text-bold text-blue-500 hover:text-red-400"
+        >
           {linkText}
         </Link>
       </p>
     </div>
-  )
-}
+  );
+};
 
-export default AuthForm
+export default AuthForm;

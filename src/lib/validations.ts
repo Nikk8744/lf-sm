@@ -8,6 +8,7 @@ export const shippingDetailsSchema = z.object({
 });
 
 export const signUpSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email(),
   password: z.string().min(8).max(100),
 });
@@ -48,4 +49,10 @@ export const orderItemSchema = z.object({
   quantity: z.number().positive(),
   unitPrice: z.string(),
   totalPrice: z.string(),
+});
+
+export const reviewSchema = z.object({
+  productId: z.string().uuid(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().min(3).max(500).optional(),
 });

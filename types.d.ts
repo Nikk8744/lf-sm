@@ -1,5 +1,5 @@
 interface AuthCredentials {
-    // fullName: string;
+    name: string;
     email: string;
     password: string;
 }
@@ -83,3 +83,14 @@ interface SendOrderConfirmationEmailParams {
     totalAmount: string;
     shippingAddress: string;
 }
+
+interface Review {
+    id: string;
+    userId: string;
+    productId: string;
+    rating: number;
+    comment?: string;
+    createdAt: string;
+    updatedAt: string;
+    userName: string;
+  }

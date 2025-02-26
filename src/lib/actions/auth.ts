@@ -27,7 +27,7 @@ export const signInWithCredentials = async (
 }
 
 export const signUp = async (params: AuthCredentials) => {
-    const {  email, password } = params;
+    const { name, email, password } = params;
 
     const existingUser = await db
         .select()
@@ -43,7 +43,7 @@ export const signUp = async (params: AuthCredentials) => {
 
     try {
         await db.insert(users).values({
-
+            name,
             email,
             password: hashedPassword,
         });
