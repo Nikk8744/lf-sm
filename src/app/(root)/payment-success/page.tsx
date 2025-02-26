@@ -20,7 +20,17 @@ const PaymentSuccess = () => {
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true)
 
+  const [purchaseType, setPurchaseType] = useState<string | null>(null);
+
   useEffect(() => {
+    // Try to get purchase type from URL or localStorage
+    const params = new URLSearchParams(window.location.search);
+    const typeFromUrl = params.get('type');
+    const typeFromStorage = localStorage.getItem('lastPurchaseType');
+    
+    const purchaseType = typeFromUrl || typeFromStorage || null;
+    setPurchaseType(purchaseType);
+
     // Fetch order details
     const fetchOrderDetails = async () => {
       try {
@@ -48,10 +58,22 @@ const PaymentSuccess = () => {
       fetchOrderDetails();
     }, 2000);
 
-    // Clear cart and direct purchase product on mount
-    if (product) clearProduct();
-    if (cart && cart.length > 0) clearCart();
-    // clear shipping details from localstorage - ye krna optional hai but its preffered
+    // // Clear cart and direct purchase product on mount
+    // if (product) clearProduct();
+    // if (cart && cart.length > 0) clearCart();
+    // // clear shipping details from localstorage - ye krna optional hai but its preffered
+    // localStorage.removeItem("shippingDetails");
+
+    // Clear only what was purchased
+    if (purchaseType === "direct" && product) {
+      clearProduct();
+    } else if (purchaseType === "cart" && cart && cart.length > 0) {
+      clearCart();
+    }
+    
+    // Clear purchase type from localStorage
+    localStorage.removeItem("lastPurchaseType");
+    // Clear shipping details from localStorage
     localStorage.removeItem("shippingDetails");
   }, []);
   console.log("The order details are:", orderDetails);

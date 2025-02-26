@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
-
+  
 const Checkout = ({
   amount,
   purchaseType,
@@ -52,6 +52,7 @@ const Checkout = ({
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
+    setErrorMessage("");
 
     if (!stripe || !elements) {
       return;
@@ -69,13 +70,16 @@ const Checkout = ({
     console.log("Helloooooooooooooooooooooooooooooo");
     console.log(stripe.confirmPayment);
 
+    // Store the purchase type in localStorage
+    localStorage.setItem('lastPurchaseType', purchaseType);
+
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
           // return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
-          return_url: `${window.location.origin}/payment-success?amount=${amount}`,
+          return_url: `${window.location.origin}/payment-success?amount=${amount}&type=${purchaseType}`,
         },
         redirect: "if_required",
       });
@@ -86,11 +90,11 @@ const Checkout = ({
 
       if (error) {
         console.log("Payment error:", error);
-        setErrorMessage(error.message);
-        handlePaymentFailure();
+        setErrorMessage(error.message || "An error occurred during payment");
+        handlePaymentFailure(error.message);
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
         console.log("Payment successful!");
-        await handlePaymentSuccess();
+        handlePaymentSuccess();
       }
     } catch (err) {
       console.error("Payment error:", err);

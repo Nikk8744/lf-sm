@@ -245,7 +245,7 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
-      <ProductReview productId={product.id} />
+      <ProductReview productId={product!.id} />
     </div>
   );
 };
