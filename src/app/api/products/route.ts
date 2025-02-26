@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
         const maxPrice = searchParams.get("maxPrice");
         const farmLocation = searchParams.get("farmLocation");
         const filters = [];
-
+        const limitParam = searchParams.get("limit");
+        const limitValue = limitParam ? parseInt(limitParam) : undefined;
         if(query) {
             filters.push(
                 sql`(LOWER(${products.name}) LIKE ${`%${query}%`} OR 
@@ -57,12 +58,24 @@ export async function GET(request: NextRequest) {
         // console.log("Category value:", category);
         // console.log("Generated SQL:", whereClause);
         // console.log("The where clause issss",whereClause)
+       
 
-        const allProducts = await db
-            .select()
-            .from(products)
-            .where(whereClause)
-            .orderBy(desc(products.createdAt))
+        let allProducts;
+        if (limitValue) {
+            allProducts = await db
+                .select()
+                .from(products)
+                .where(whereClause)
+                .orderBy(desc(products.createdAt))
+                .limit(limitValue);
+        } else {
+            allProducts = await db
+                .select()
+                .from(products)
+                .where(whereClause)
+                .orderBy(desc(products.createdAt));
+        }
+
         // console.log("The products are here",allProducts)
 
         if(!allProducts || allProducts.length === 0){

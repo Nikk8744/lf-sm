@@ -41,7 +41,7 @@ export async function POST(request: NextRequest){
         console.log("Shipping address to be stored in metadata:", shippingAddressString);
 
         // Simplify items data to reduce metadata size
-        const simplifiedItems = items.map((item) => ({
+        const simplifiedItems = items.map((item: { productId: string; quantity: number }) => ({
             productId: item.productId,
             quantity: item.quantity,
         }));

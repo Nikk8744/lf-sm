@@ -18,12 +18,14 @@ const stripePromise = loadStripe(
 );
 
 const PaymentPage = () => {
-  const { cart} = useCartStore();
-  const { product} = useDirectPurchaseStore();
+  const { cart } = useCartStore();
+  const { product } = useDirectPurchaseStore();
   const { data: session } = useSession();
   const router = useRouter();
-  const [paymentStatus, setPaymentStatus] = useState<'pending' | 'completed' | 'failed'>('pending');
-  const [shippingAddress, setShippingAddress] = useState("")
+  const [paymentStatus, setPaymentStatus] = useState<
+    "pending" | "completed" | "failed"
+  >("pending");
+  const [shippingAddress, setShippingAddress] = useState("");
 
   useEffect(() => {
     // Get shipping details from localStorage
@@ -31,13 +33,15 @@ const PaymentPage = () => {
     if (shippingDetails) {
       const details = JSON.parse(shippingDetails);
       // Format the address
-      const formattedAddress = details.formattedAddress || `${details.name}, ${details.address}, ${details.city}`;
+      const formattedAddress =
+        details.formattedAddress ||
+        `${details.name}, ${details.address}, ${details.city}`;
       // setShippingAddress(details);
       console.log("The shipping address is:", formattedAddress);
       setShippingAddress(formattedAddress);
     } else {
       // Redirect to shipping page if no shipping details are found
-      router.push('/checkout/shipping');
+      router.push("/checkout/shipping");
     }
   }, [router]);
 
@@ -49,7 +53,9 @@ const PaymentPage = () => {
       return 0; // Handle empty cart case
     }
     if (cart && cart.length > 0) {
-      return Number(cart.reduce((total, item) => total + item.price * item.quantity,0)); 
+      return Number(
+        cart.reduce((total, item) => total + item.price * item.quantity, 0)
+      );
     }
   };
   const amount = Number(calculateAmount());
@@ -59,30 +65,38 @@ const PaymentPage = () => {
   };
 
   const handlePaymentSuccess = async () => {
-    setPaymentStatus('completed');
-    router.push('/payment-success');
+    setPaymentStatus("completed");
+    router.push("/payment-success");
 
-    console.log("Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
+    console.log(
+      "Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"
+    );
     // await send
   };
 
-  const handlePaymentFailure = () => {
-    setPaymentStatus('failed');
+  const handlePaymentFailure = (errorMessage?: string) => {
+    setPaymentStatus("failed");
     console.log("Payment Faileddddddddddddddddddddddddddddddddd");
-    router.push('/payment-failed')
+    // router.push('/payment-failed')
+    
+    // Redirect to payment-failed page with error details if available
+    if (errorMessage) {
+      router.push(`/payment-failed?error=${encodeURIComponent(errorMessage)}`);
+    } else {
+      router.push("/payment-failed");
+    }
   };
-  
 
   useEffect(() => {
     if (!session?.user) {
-      router.push('/sign-in');
+      router.push("/sign-in");
       return;
     }
     if (!product && (!cart || cart.length === 0)) {
-      router.push('/products');
+      router.push("/products");
     }
-  }, [router, session, product, cart])
-  
+  }, [router, session, product, cart]);
+
   if (!session) {
     return null;
   }
@@ -100,11 +114,11 @@ const PaymentPage = () => {
             currency: "usd",
           }}
         >
-          <Checkout 
-            amount={amount} 
-            purchaseType={getPurchaseType()} 
+          <Checkout
+            amount={amount}
+            purchaseType={getPurchaseType()}
             handlePaymentSuccess={handlePaymentSuccess}
-            handlePaymentFailure={handlePaymentFailure} 
+            handlePaymentFailure={handlePaymentFailure}
             shippingAddress={shippingAddress}
           />
         </Elements>

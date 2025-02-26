@@ -24,7 +24,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
 
         // If we get here, we know we have enough inventory
         const completeItems = await Promise.all(
-            simplifiedItems.map(async (item) => {
+            simplifiedItems.map(async (item: { productId: string; quantity: number }) => {
                 const [product] = await db
                     .select()
                     .from(products)
@@ -54,16 +54,28 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
             isWebhook: true,
         };
 
+        console.log("Sending order data to API:", JSON.stringify(orderData, null, 2));
+
         const orderResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/orders`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderData),
         });
 
+        // this is not necessary but it helps in debugging
+        const responseText = await orderResponse.text();
+        console.log(`Order API response (${orderResponse.status}):`, responseText);
+
         if (!orderResponse.ok) {
-            const errorText = await orderResponse.text();
-            const errorData = JSON.parse(errorText);
-            
+            // const errorText = await orderResponse.text();
+            // const errorData = JSON.parse(errorText);
+            let errorData;
+            try {
+                errorData = JSON.parse(responseText);
+            } catch (e) {
+                errorData = { error: responseText || `Unknown error ${e}` };
+            }
+
             // If it's an inventory error, we should handle it specially
             if (errorData.error && errorData.error.includes("Insufficient inventory")) {
                 // Initiate refund
@@ -77,7 +89,14 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
             throw new Error(errorData.error || 'Failed to create order');
         }
 
-        const orderResult = await orderResponse.json();
+        // const orderResult = await orderResponse.json();
+        let orderResult;
+        try {
+            orderResult = JSON.parse(responseText);
+        } catch (e) {
+            console.error("Failed to parse order response:", e);
+            throw new Error('Invalid response from order API');
+        }
         return orderResult;
     } catch (error) {
         console.error("Error in createOrder:", error);
@@ -85,8 +104,13 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     }
 }
 
-async function sendConfirmationEmail(paymentIntent: Stripe.PaymentIntent, orderResult: any) {
+async function sendConfirmationEmail(paymentIntent: Stripe.PaymentIntent, orderResult: { order: { id: string } }) {
     try {
+        if (!orderResult || !orderResult.order || !orderResult.order.id) {
+            console.error("Invalid order result:", orderResult);
+            throw new Error("Invalid order result structure");
+        }
+        
         // fetching the user details
         const [user] = await db
             .select()
@@ -145,7 +169,7 @@ async function sendConfirmationEmail(paymentIntent: Stripe.PaymentIntent, orderR
 }
 
 export async function POST(req: Request) {
-    console.log("Webhook endpoint hittttttt")
+    console.log(" 🔥🔥🔥🔥Webhook endpoint hittttttt", new Date().toISOString());
     // get the payload that is coming fromn stripe and store it in text format not json
     try {
         const body = await req.text();

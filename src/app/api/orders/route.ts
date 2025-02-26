@@ -15,6 +15,21 @@ export async function POST(request: NextRequest) {
         const validatedData = createOrderSchema.parse(body);
         const { items, totalAmount, shippingAddress, paymentMethod, paymentIntentId, userId, isWebhook } = validatedData;
 
+        // Check if order with this payment intent already exists
+        const existingOrders = await db
+            .select()
+            .from(orders)
+            .where(eq(orders.paymentIntentId, paymentIntentId));
+        
+        if (existingOrders.length > 0) {
+            console.log(`Order already exists for payment intent ${paymentIntentId}`);
+            return NextResponse.json({
+                success: true,
+                message: "Order already processed",
+                order: existingOrders[0],
+            });
+        }
+
         // this check is to ensure that if its a webhook request then skip the session check as its server-to-server request
         if (!isWebhook) {
             const session = await getServerSession(authOptions);
@@ -28,7 +43,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check inventory for all items in a transaction-like manner
-        const inventoryChecks = await Promise.all(
+        const verifiedItems = await Promise.all(
             items.map(async (item) => {
                 const [product] = await db
                     .select()
@@ -46,10 +61,13 @@ export async function POST(request: NextRequest) {
 
                 return {
                     ...item,
+                    product,
                     currentStock: availableQuantity
                 };
             })
         );
+
+        console.log(`Creating order for user ${userId} with ${verifiedItems.length} items`);
 
 
         // console.log("The req body is", reqBody)
@@ -134,7 +152,7 @@ export async function GET() {
         };
 
         const userOrders = await db.select().from(orders).where(eq(orders.userId, session.user.id)).orderBy(desc(orders.createdAt));
-        console.log("The user orders are", userOrders)
+        // console.log("The user orders are", userOrders)
 
         return NextResponse.json(userOrders, { status: 200 })
     } catch (error) {

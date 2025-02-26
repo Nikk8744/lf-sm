@@ -20,7 +20,7 @@ interface CheckoutProps {
     amount: number;
     purchaseType: 'direct' | 'cart';
     handlePaymentSuccess: () => void;
-    handlePaymentFailure: () => void;
+    handlePaymentFailure: (errorMessage?: string) => void;
     shippingAddress: string;
 }
 

@@ -18,6 +18,7 @@ const PaymentSuccess = () => {
   const { cart, clearCart } = useCartStore();
   const { product, clearProduct } = useDirectPurchaseStore();
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Fetch order details
@@ -29,15 +30,23 @@ const PaymentSuccess = () => {
           // Assuming the latest order is the first in the array
           if (data && data.length > 0) {
             setOrderDetails(data[0]);
+            setLoading(false);
           }
           console.log("The response isdss::", data);
+        } else {
+          setLoading(false);
+          console.error("Failed to fetch orders");
         }
       } catch (error) {
+        setLoading(false);
         console.error("Error while fetching order details", error);
       }
     };
 
-    fetchOrderDetails();
+    // fetchOrderDetails();
+    setTimeout(() => {
+      fetchOrderDetails();
+    }, 2000);
 
     // Clear cart and direct purchase product on mount
     if (product) clearProduct();
@@ -52,6 +61,15 @@ const PaymentSuccess = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center flex-col">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></div>
+        <p className="text-gray-600">Processing your order...</p>
       </div>
     );
   }
