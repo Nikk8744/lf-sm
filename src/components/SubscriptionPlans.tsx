@@ -6,21 +6,25 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { CheckCircle } from 'lucide-react';
-import { Plan } from '../../types';
+import { DeliverySchedule, Plan } from '../../types';
 import PaymentForm from './PaymentForm';
 import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import DeliveryScheduleForm from './DeliveryScheduleForm';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const SubscriptionPlans = () => {
     const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+//   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+    const [showDialog, setShowDialog] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
+  const [step, setStep] = useState<'delivery' | 'payment'>('delivery');
+  const [deliverySchedule, setDeliverySchedule] = useState<DeliverySchedule | null>(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -48,49 +52,78 @@ const SubscriptionPlans = () => {
 
   const handlePlanSelect = async (plan: Plan) => {
     setSelectedPlan(plan);
-    setShowPaymentDialog(true);
+    // setShowPaymentDialog(true);
+    setShowDialog(true);
     setProcessingPlanId(plan.id);
     
+    // try {
+    //   const response = await fetch('/api/create-subscription-intent', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ planId: plan.id }),
+    //     credentials: 'include', // Include cookies for auth
+    //   });
+
+    //   if (!response.ok) {
+    //     const errorText = await response.text();
+    //     console.error('Server response:', response.status, errorText);
+    //     throw new Error(`Server returned ${response.status}: ${errorText}`);
+    //   }
+
+    //   const data = await response.json();
+    //   if (!data.clientSecret) {
+    //     throw new Error('No client secret received from server');
+    //   }
+    //   setClientSecret(data.clientSecret);
+    // } catch (error) {
+    //   console.error('Error initializing payment:', error);
+    //   toast({
+    //     title: "Error",
+    //     description: "Failed to initialize payment. Please try again.",
+    //     variant: "destructive",
+    //   });
+    // //   setShowPaymentDialog(false);
+    // } finally {
+    //     setProcessingPlanId(null);
+    // }
+  };
+
+  const handleDeliverySubmit = async (data: DeliverySchedule) => {
+    setIsLoading(true);
     try {
+      setDeliverySchedule(data);
+      
+      // Get the payment intent client secret
       const response = await fetch('/api/create-subscription-intent', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: plan.id }),
-        credentials: 'include', // Include cookies for auth
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: selectedPlan?.id,
+        }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Server response:', response.status, errorText);
-        throw new Error(`Server returned ${response.status}: ${errorText}`);
-      }
-
-      const data = await response.json();
-      if (!data.clientSecret) {
-        throw new Error('No client secret received from server');
-      }
-      setClientSecret(data.clientSecret);
+      const { clientSecret: secret } = await response.json();
+      setClientSecret(secret);
+      setStep('payment');
     } catch (error) {
-      console.error('Error initializing payment:', error);
-      toast({
-        title: "Error",
-        description: "Failed to initialize payment. Please try again.",
-        variant: "destructive",
-      });
-    //   setShowPaymentDialog(false);
+      console.error('Error setting up subscription:', error);
+      // Handle error (show toast, etc.)
     } finally {
-        setProcessingPlanId(null);
+      setIsLoading(false);
     }
   };
 
   const handlePaymentSuccess = (result: any) => {
-    setShowPaymentDialog(false);
-    toast({
-        title: "Success",
-        description: "Your subscription has been processed successfully!",
-      });
-    // Additional success handling (e.g., redirect to dashboard)
-    router.push(`/subscription-success?subscription_id=${result.subscription.id}`);
+    setShowDialog(false);
+    setStep('delivery');
+    setSelectedPlan(null);
+    setDeliverySchedule(null);
+    // Handle success (redirect, show toast, etc.)
+
+    router.push('/subscription-success');
+    // router.push(`/subscription-success?subscription_id=${subscriptionId}`);
   };
 
   const handlePaymentError = (error: any) => {
@@ -154,32 +187,37 @@ const SubscriptionPlans = () => {
         ))}
       </div>
 
-      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-        <DialogContent>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Complete Your Subscription</DialogTitle>
+            <DialogTitle>
+              {step === 'delivery' ? 'Set Delivery Schedule' : 'Payment Details'}
+            </DialogTitle>
           </DialogHeader>
-          {clientSecret && selectedPlan && (
-            <Elements 
-              stripe={stripePromise} 
-              options={{
-                clientSecret,
-                appearance: { theme: 'stripe' },
-                paymentMethodCreation: 'manual'
-              }}
-            >
-              <PaymentForm
-                selectedPlan={selectedPlan}
-                deliverySchedule={{
-                  preferredDay: "Monday",
-                  preferredTime: "morning",
-                  address: "123 Main St",
-                  instructions: "Leave at door"
+
+          {step === 'delivery' ? (
+            <DeliveryScheduleForm
+              onSubmit={handleDeliverySubmit}
+              isLoading={isLoading}
+            />
+          ) : (
+            clientSecret && selectedPlan && deliverySchedule && (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  clientSecret,
+                  appearance: { theme: 'stripe' },
+                  paymentMethodCreation: 'manual'
                 }}
-                onSuccess={handlePaymentSuccess}
-                onError={handlePaymentError}
-              />
-            </Elements>
+              >
+                <PaymentForm
+                  selectedPlan={selectedPlan}
+                  deliverySchedule={deliverySchedule}
+                  onSuccess={handlePaymentSuccess}
+                  onError={handlePaymentError}
+                />
+              </Elements>
+            )
           )}
         </DialogContent>
       </Dialog>

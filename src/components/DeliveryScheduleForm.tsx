@@ -45,16 +45,16 @@ const DELIVERY_TIMES = [
   '3:00 PM - 6:00 PM'
 ];
 
-export default function DeliveryScheduleForm({ onSubmit, isLoading }: DeliveryScheduleFormProps) {
-  const form = useForm<DeliveryFormData>({
-    resolver: zodResolver(deliveryFormSchema),
-    defaultValues: {
-      preferredDay: '',
-      preferredTime: '',
-      address: '',
-      instructions: '',
-    },
-  });
+export default function DeliveryScheduleForm({ onSubmit, isLoading, defaultValues }: DeliveryScheduleFormProps) {
+    const form = useForm<DeliveryFormData>({
+        resolver: zodResolver(deliveryFormSchema),
+        defaultValues: {
+          preferredDay: defaultValues?.preferredDay || '',
+          preferredTime: defaultValues?.preferredTime || '',
+          address: defaultValues?.address || '',
+          instructions: defaultValues?.instructions || '',
+        },
+      });
 
   return (
     <Form {...form}>

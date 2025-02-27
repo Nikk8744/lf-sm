@@ -19,6 +19,24 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { planId, paymentMethodId, deliverySchedule } = createSubscriptionSchema.parse(body);
 
+        let customer;
+        const existingCustomers = await stripe.customers.list({
+            email: session.user.email!,
+            limit: 1,
+        });
+
+        if (existingCustomers.data.length > 0) {
+            customer = existingCustomers.data[0];
+        } else {
+            customer = await stripe.customers.create({
+                email: session.user.email!,
+                payment_method: paymentMethodId,
+                invoice_settings: {
+                    default_payment_method: paymentMethodId,
+                },
+            });
+        }
+
         const plan = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.id, planId)).limit(1);
         if (!plan.length) {
             return new Response("Plan not found", { status: 404 });
@@ -58,7 +76,7 @@ export async function POST(request: NextRequest) {
         let stripeSubscription;
         try {
             stripeSubscription = await stripe.subscriptions.create({
-                customer: user[0].stripeCustomerId!,
+                customer: customer.id,
                 items: [{ price: plan[0].stripePriceId }],
                 payment_behavior: "default_incomplete",
                 payment_settings: {
