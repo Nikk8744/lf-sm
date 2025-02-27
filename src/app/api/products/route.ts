@@ -25,17 +25,6 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        // if(category){
-        //     filters.push(sql`${products.category} = ${category}`)
-        // }
-
-        // if(minPrice){
-        //     filters.push(sql`${products.price} >= ${minPrice}`)
-        // }
-        // if(maxPrice){
-        //     filters.push(sql`${products.price} <= ${maxPrice}`)
-        // }
-
         if(category && category !== "") {
             // Use ilike for case-insensitive comparison
             filters.push(sql`LOWER(${products.category}) = LOWER(${category})`)
@@ -73,7 +62,7 @@ export async function GET(request: NextRequest) {
                 .select()
                 .from(products)
                 .where(whereClause)
-                .orderBy(desc(products.createdAt));
+                .orderBy();
         }
 
         // console.log("The products are here",allProducts)

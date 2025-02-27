@@ -56,3 +56,24 @@ export const reviewSchema = z.object({
   rating: z.number().int().min(1).max(5),
   comment: z.string().min(3).max(500).optional(),
 });
+
+
+export const subscriptionPlansSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  description: z.string().min(3, "Description must be at least 3 characters").optional(),
+  price: z.number().positive("Price must be a positive number"),
+  interval: z.enum(["DAILY", "WEEKLY", "MONTHLY", "YEARLY"]),
+  isActive: z.boolean().optional(),
+  maxProducts: z.number().positive("Must include at least one product"),
+})
+
+export const createSubscriptionSchema = z.object({
+  planId: z.string().uuid(),
+  paymentMethodId: z.string().min(1),
+    deliverySchedule: z.object({
+        preferredDay: z.string(),
+        preferredTime: z.string(),
+        address: z.string(),
+        instructions: z.string().optional(),
+    }),
+})

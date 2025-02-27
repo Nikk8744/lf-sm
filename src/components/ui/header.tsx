@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   //   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
@@ -19,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { useCartStore } from "@/store/useCartStore";
 import { Badge } from "./badge";
 
-function Header1() {
+function  Header1() {
   const [isOpen, setOpen] = useState(false);
   const { data: session } = useSession();
   const cart = useCartStore((state) => state.cart);
@@ -39,17 +38,21 @@ function Header1() {
           <NavigationMenu className="flex justify-start items-start ">
             <NavigationMenuList className="flex justify-start gap-4 flex-row">
               <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
-                <NavigationMenuLink href="/"> Home </NavigationMenuLink>
+                <Link href="/"> Home </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
-                <NavigationMenuLink href="/products">
+                <Link href="/products">
                   {" "}
                   Products{" "}
-                </NavigationMenuLink>
+                </Link>
               </NavigationMenuItem>
               <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
-                <NavigationMenuLink href="/orders"> Orders </NavigationMenuLink>
+                <Link href="/orders"> Orders </Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
+                <Link href="/subscription-plans">Subscriptions</Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

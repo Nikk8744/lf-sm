@@ -93,4 +93,28 @@ interface Review {
     createdAt: string;
     updatedAt: string;
     userName: string;
+}
+
+export interface Plan {
+    id: string;
+    name: string;
+    description: string;
+    price: string;
+    interval: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+    isActive: boolean;
+    maxProducts: number;
+    stripeProductId: string;
+    stripePriceId: string;
+  }
+  
+  export interface DeliverySchedule {
+    preferredDay: string;
+    preferredTime: string;
+    address: string;
+    instructions?: string;
+  }
+  
+  export interface SubscriptionFormData {
+    planId: string;
+    deliverySchedule: DeliverySchedule;
   }

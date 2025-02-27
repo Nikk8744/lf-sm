@@ -1,6 +1,6 @@
-import { decimal, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { boolean, decimal, integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
-export const ROLE_ENUM = pgEnum('role', ['ADMIN', 'USER']);
+export const ROLE_ENUM = pgEnum('role', ['ADMIN', 'USER', 'FARMER']);
 
 export const users = pgTable('users', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
@@ -9,6 +9,7 @@ export const users = pgTable('users', {
     password: text('password').notNull(),
     role: ROLE_ENUM('role').default('USER'),
     googleId: varchar('google_id').unique(),
+    stripeCustomerId: text('stripe_customer_id').unique(),
     createdAt: timestamp('created_at', {
         withTimezone: true,
     }).notNull().defaultNow(),
@@ -75,6 +76,58 @@ export const review = pgTable('reviews', {
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const SUBSCRIPTION_INTERVAL_ENUM = pgEnum('subscription_interval', ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']);
+export const SUBSCRIPTION_STATUS_ENUM = pgEnum('subscription_status', ['ACTIVE', 'PAUSED', 'CANCELLED']);
+
+
+export const subscriptionPlans = pgTable('subscription_plans', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    name: varchar('name').notNull(),
+    description: text('description'),
+    price: decimal('price').notNull(),
+    interval: SUBSCRIPTION_INTERVAL_ENUM('interval').notNull(),
+    isActive: boolean('is_active').default(true),
+    maxProducts: integer('max_products').notNull(),
+    stripeProductId: text('stripe_product_id').notNull().unique(), // this will liknk to stripe product - which link you plans to stripe
+    stripePriceId: text('stripe_price_id').notNull().unique(), 
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const subscriptions = pgTable('subscriptions', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    userId: uuid('user_id').notNull().references(() => users.id),
+    planId: uuid('plan_id').notNull().references(() => subscriptionPlans.id),
+    status: SUBSCRIPTION_STATUS_ENUM('status').notNull(),
+    currentPeriodStart: timestamp('current_period_start', { withTimezone: true }).notNull(),
+    currentPeriodEnd: timestamp('current_period_end', { withTimezone: true }).notNull(),
+    stripeSubscriptionId: varchar('stripe_subscription_id').notNull().unique(),
+    cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
+    stripePriceId: text('stripe_price_id').notNull(),
+    stripeCustomerId: text('stripe_customer_id').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const deliverySchedules = pgTable('delivery_schedules', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    subscriptionId: uuid('subscription_id').notNull().references(() => subscriptions.id),
+    preferredDay: varchar('preferred_day').notNull(),
+    preferredTime: varchar('preferred_time').notNull(),
+    address: text('address').notNull(),
+    instructions: text('instructions'),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const subscriptionItems = pgTable('subscription_items', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    subscriptionId: uuid('subscription_id').notNull().references(() => subscriptions.id),
+    productId: uuid('product_id').notNull().references(() => products.id),
+    quantity: integer('quantity').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    // updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
 
 /* 
 Tables to create
@@ -86,5 +139,11 @@ user_address table: id, userid(users), address [optional]
 order_items: id, orderId(orders), productId(products), quantity, unitPrice, totalPrice, timestamps
 cart_table: id, userId(users), productId(products), quantity, timestamps
 
+
+-----------------
+subscription feature:
+
+subscription_plans: id, name, price, interval, features, timestamps
+subscription: id, userId(users), planId(subscription_plans), status, start, end, stripe_subscription_id, timestamps
 
 */

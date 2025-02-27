@@ -1,5 +1,5 @@
 import { db } from "@/database/drizzle";
-import { orderItems, products, users } from "@/database/schema";
+import { orderItems, products, subscriptions, users } from "@/database/schema";
 import { validatePaymentIntent } from "@/lib/helpers/payment";
 import { sendOrderConfirmationEmail } from "@/lib/resend";
 import { stripe } from "@/lib/stripe";
@@ -20,7 +20,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
         const shippingAddress = paymentIntent.metadata.shippingAddress;
         if (!shippingAddress) {
             throw new Error('Shipping address not found in payment intent metadata');
-        }     
+        }
 
         // If we get here, we know we have enough inventory
         const completeItems = await Promise.all(
@@ -85,7 +85,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
                 });
                 console.log("Payment refunded due to insufficient inventory");
             }
-            
+
             throw new Error(errorData.error || 'Failed to create order');
         }
 
@@ -110,7 +110,7 @@ async function sendConfirmationEmail(paymentIntent: Stripe.PaymentIntent, orderR
             console.error("Invalid order result:", orderResult);
             throw new Error("Invalid order result structure");
         }
-        
+
         // fetching the user details
         const [user] = await db
             .select()
@@ -241,6 +241,61 @@ export async function POST(req: Request) {
                 error: "Payment failed",
                 paymentIntentId: paymentIntent.id,
             });
+        }
+
+        if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
+            const subscription = event.data.object as Stripe.Subscription;
+
+            await db.update(subscriptions)
+                .set({
+                    status: subscription.status.toUpperCase() as 'ACTIVE' | 'PAUSED' | 'CANCELLED',
+                    currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+                    cancelAtPeriodEnd: subscription.cancel_at_period_end,
+                })
+                .where(eq(subscriptions.stripeSubscriptionId, subscription.id));
+
+            return NextResponse.json({ success: true });
+        }
+
+        if (event.type === "customer.subscription.deleted") {
+            const subscription = event.data.object as Stripe.Subscription;
+
+            await db.update(subscriptions)
+                .set({
+                    status: 'CANCELLED',
+                    cancelAtPeriodEnd: true
+                })
+                .where(eq(subscriptions.stripeSubscriptionId, subscription.id));
+
+            return NextResponse.json({ success: true });
+        }
+
+        // Handle invoice payment success for subscriptions
+        if (event.type === "invoice.payment_succeeded") {
+            const invoice = event.data.object as Stripe.Invoice;
+            if (invoice.subscription) {
+                await db.update(subscriptions)
+                    .set({
+                        status: 'ACTIVE',
+                        currentPeriodEnd: new Date(invoice.period_end * 1000),
+                    })
+                    .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription as string));
+            }
+            return NextResponse.json({ success: true });
+        }
+
+        // Handle invoice payment failure
+        if (event.type === "invoice.payment_failed") {
+            const invoice = event.data.object as Stripe.Invoice;
+            if (invoice.subscription) {
+                await db.update(subscriptions)
+                    .set({
+                        status: 'PAUSED',
+                    })
+                    .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription as string));
+            }
+            return NextResponse.json({ success: true });
         }
 
 
