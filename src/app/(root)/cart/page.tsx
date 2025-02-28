@@ -9,7 +9,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { ArrowRight, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
@@ -17,7 +17,7 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
 
   // Fetch product stock information
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function CartPage() {
     fetchProductStocks();
   }, [cart, updateQuantity, toast]);
 
-  const handleUpdateQuantity = (productId: string, newQuantity: number) => {
+  const handleUpdateQuantity = useCallback((productId: string, newQuantity: number) => {
     // Don't allow quantity below 1
     if (newQuantity < 1) return;
     
@@ -80,11 +80,11 @@ export default function CartPage() {
     }
     
     updateQuantity(productId, newQuantity);
-  };
+  }, [productStocks, updateQuantity, toast]);
 
-  const handleRemove = (productId: string) => {
+  const handleRemove = useCallback((productId: string) => {
     removeFromCart(productId);
-  };
+  }, [removeFromCart]);
 
   return (
     <div className="container mx-auto px-4 py-8">

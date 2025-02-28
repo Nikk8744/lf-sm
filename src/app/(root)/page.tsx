@@ -1,4 +1,3 @@
-
 import CallToAction from "@/components/home/CallToAction";
 import FeaturedProducts from "@/components/home/FeaturedProducts";
 import Testimonials from "@/components/home/Testimonials";

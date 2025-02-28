@@ -1,4 +1,3 @@
-'use client'
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import Image from "next/image";

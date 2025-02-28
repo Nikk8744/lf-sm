@@ -1,4 +1,3 @@
-'use client';
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
+import { ProductCardProps } from "../../types";
 
 export function ProductCard({
   id,

@@ -6,6 +6,7 @@ import { users } from "@/database/schema";
 import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { signIn } from "next-auth/react"; // this is a client side component only so either i'll have to make change in the auth and export signIn and signOut there or wirte the signin/login code in signin page 
+import { AuthCredentials } from "../../../types";
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">,
@@ -42,14 +43,14 @@ export const signUp = async (params: AuthCredentials) => {
     const hashedPassword = await hash(password, 10);
 
     try {
-        await db.insert(users).values({
+        const signupResult = await db.insert(users).values({
             name,
             email,
             password: hashedPassword,
         });
 
-        await signInWithCredentials({ email, password });
-        return { success: true };
+        // await signInWithCredentials({ email, password });
+        return { success: true, signupResult };
     } catch (error) {
         console.log(error, "Signup error");
         return {success: false, error: "Signup error"};

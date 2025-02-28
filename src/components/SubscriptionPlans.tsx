@@ -115,7 +115,7 @@ const SubscriptionPlans = () => {
               plan.name === 'Premium' ? 'border-green-500 shadow-lg' : ''
             }`}
           >
-            {plan.name === 'Premium' && (
+            {plan.name === 'Daily Fresh' && (
               <Badge 
                 className="absolute top-4 right-4 bg-green-500"
               >
@@ -181,7 +181,7 @@ const SubscriptionPlans = () => {
                 options={{
                   clientSecret,
                   appearance: { theme: 'stripe' },
-                  paymentMethodCreation: 'manual'
+                  // paymentMethodCreation: 'manual'
                 }}
               >
                 <PaymentForm
