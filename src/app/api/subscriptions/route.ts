@@ -19,31 +19,17 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { planId, paymentMethodId, deliverySchedule } = createSubscriptionSchema.parse(body);
 
-        let customer;
-        const existingCustomers = await stripe.customers.list({
-            email: session.user.email!,
-            limit: 1,
-        });
 
-        if (existingCustomers.data.length > 0) {
-            customer = existingCustomers.data[0];
-        } else {
-            customer = await stripe.customers.create({
-                email: session.user.email!,
-                payment_method: paymentMethodId,
-                invoice_settings: {
-                    default_payment_method: paymentMethodId,
-                },
-            });
-        }
-
-        const plan = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.id, planId)).limit(1);
-        if (!plan.length) {
-            return new Response("Plan not found", { status: 404 });
-        }
-
+        // Get user and their stripe customer ID
         const user = await db.select().from(users).where(eq(users.id, session.user.id));
         let stripeCustomerId = user[0]?.stripeCustomerId;
+
+        // let customer;
+        // const existingCustomers = await stripe.customers.list({
+        //     email: session.user.email!,
+        //     limit: 1,
+        // });
+        
 
         // Create a new Stripe customer if the user doesn't have one already
         if(!stripeCustomerId){
@@ -55,23 +41,43 @@ export async function POST(request: NextRequest) {
                 },
             })
             stripeCustomerId = customer.id;
+            
+            // Update user with new stripe customer ID
             await db.update(users).set({
                 stripeCustomerId: customer.id,
             }).where(eq(users.id, session.user.id));
 
         } else {
-            // If customer exists, just attach the payment method
-            await stripe.paymentMethods.attach(paymentMethodId, {
-                customer: stripeCustomerId,
-            });
+            // If customer exists, create a new payment method attachment
+            try {
+                // Create a new payment method attachment
+                await stripe.paymentMethods.attach(paymentMethodId, {
+                    customer: stripeCustomerId,
+                });
+                
+                // Set it as the default payment method
+                await stripe.customers.update(stripeCustomerId, {
+                    invoice_settings: {
+                        default_payment_method: paymentMethodId,
+                    },
+                });
+            } catch (error: any) {
+                if (error.code === 'resource_already_exists') {
+                    // If payment method is already attached, just update the default payment method
+                    await stripe.customers.update(stripeCustomerId, {
+                        invoice_settings: {
+                            default_payment_method: paymentMethodId,
+                        },
+                    });
+                } else {
+                    throw error;
+                }
+            }
+        }
 
-            // Update customer's default payment method
-            await stripe.customers.update(user[0].stripeCustomerId!, {
-                // payment_method: paymentMethodId,
-                invoice_settings: {
-                    default_payment_method: paymentMethodId,
-                },
-            });
+        const plan = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.id, planId)).limit(1);
+        if (!plan.length) {
+            return new Response("Plan not found", { status: 404 });
         }
 
         // Create Stripe subscription
@@ -108,11 +114,11 @@ export async function POST(request: NextRequest) {
         try {
             const subscriptionResult = await db.insert(subscriptions).values({
                 userId: session?.user.id as string,
-                planId: planId as string,
+                planId: planId as string,   
                 status: "ACTIVE",
                 stripeSubscriptionId: stripeSubscription.id,
                 stripePriceId: plan[0].stripePriceId,
-                stripeCustomerId: user[0].stripeCustomerId as string,
+                stripeCustomerId: stripeCustomerId,
                 currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
                 currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
                 cancelAtPeriodEnd: false,

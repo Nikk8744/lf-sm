@@ -221,14 +221,14 @@ async function sendSubscriptionEmail(subscription: Stripe.Subscription) {
         await sendSubscriptionConfirmationEmail({
             to: user.email,
             customerName: user.name || "Valued Customer",
-            planName: dbSubscription.plan.name,
-            price: dbSubscription.plan.price,
-            interval: dbSubscription.plan.interval,
+            planName: dbSubscription.plan?.name || "Unknown Plan",
+            price: dbSubscription.plan?.price || "Unknown Price",
+            interval: dbSubscription.plan?.interval || "Unknown Interval",
             deliverySchedule: {
-                preferredDay: dbSubscription.delivery.preferredDay,
-                preferredTime: dbSubscription.delivery.preferredTime,
-                address: dbSubscription.delivery.address,
-                instructions: dbSubscription.delivery.instructions || undefined,
+                preferredDay: dbSubscription.delivery?.preferredDay as string,
+                preferredTime: dbSubscription.delivery?.preferredTime as string,
+                address: dbSubscription.delivery?.address as string,
+                instructions: dbSubscription.delivery?.instructions || undefined,
             },
         });
 

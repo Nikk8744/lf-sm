@@ -1,5 +1,4 @@
 "use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,11 +6,15 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useCartStore } from "@/store/useCartStore";
 import { ArrowRight, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function CartPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
   const [productStocks, setProductStocks] = useState<any>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -21,6 +24,10 @@ export default function CartPage() {
 
   // Fetch product stock information
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/sign-in");
+      return;
+    }
     const fetchProductStocks = async () => {
       if (cart.length === 0) {
         setIsLoading(false);

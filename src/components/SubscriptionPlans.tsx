@@ -12,10 +12,12 @@ import { toast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import DeliveryScheduleForm from './DeliveryScheduleForm';
 import { Badge } from './ui/badge';
+import { useSession } from 'next-auth/react';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 const SubscriptionPlans = () => {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [showDialog, setShowDialog] = useState(false);
@@ -49,6 +51,10 @@ const SubscriptionPlans = () => {
   };
 
   const handlePlanSelect = (plan: Plan) => {
+    if (status === "unauthenticated") {
+      router.push("/sign-in");
+      return;
+    }
     setSelectedPlan(plan);
     setShowDialog(true);
     setStep('delivery');
@@ -181,7 +187,7 @@ const SubscriptionPlans = () => {
                 options={{
                   clientSecret,
                   appearance: { theme: 'stripe' },
-                  // paymentMethodCreation: 'manual'
+                  paymentMethodCreation: 'manual'
                 }}
               >
                 <PaymentForm

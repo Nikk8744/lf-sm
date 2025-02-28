@@ -25,7 +25,7 @@ function Header1() {
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Calculate total items in cart
-  const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const cartItemsCount = cart.length;
 
   const handleLogout = async () => {
     await signOut({ redirect: true, callbackUrl: "/" }); // Optionally redirect to home after logout
@@ -50,6 +50,10 @@ function Header1() {
 
               <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
                 <Link href="/subscription-plans">Subscriptions</Link>
+              </NavigationMenuItem>
+
+              <NavigationMenuItem className="hover:text-red-600 hover:bg-slate-200 rounded-md px-2 py-1 font-mono font-semibold text-lg">
+                <Link href="/about">About</Link>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

@@ -13,7 +13,7 @@ import {
   interface SubscriptionConfirmationEmailProps {
     customerName: string;
     planName: string;
-    price: string;
+    price?: string;
     interval: string;
     deliverySchedule: {
       preferredDay: string;

@@ -1,3 +1,4 @@
+'use server';
 import { config } from 'dotenv';
 import dummyProducts from '../../dummyProducts.json';   
 // import { db } from './drizzle';
