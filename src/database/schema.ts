@@ -94,7 +94,7 @@ export const subscriptionPlans = pgTable('subscription_plans', {
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
-export const subscriptions = pgTable('subscriptions', {
+export const subscriptions = pgTable('subscriptions', { 
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
     userId: uuid('user_id').notNull().references(() => users.id),
     planId: uuid('plan_id').notNull().references(() => subscriptionPlans.id),
@@ -127,6 +127,26 @@ export const subscriptionItems = pgTable('subscription_items', {
     quantity: integer('quantity').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     // updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const ORDER_TRACKING_STATUS_ENUM = pgEnum('order_tracking_status', [
+    'ORDER_PLACED',
+    'CONFIRMED',
+    'PROCESSING',
+    'PACKED',
+    'SHIPPED',
+    'OUT_FOR_DELIVERY',
+    'DELIVERED'
+]);
+
+export const orderTracking = pgTable('order_tracking', {
+    id: uuid('id').notNull().primaryKey().defaultRandom(),
+    orderId: uuid('order_id').notNull().references(() => orders.id),
+    status: ORDER_TRACKING_STATUS_ENUM('status').notNull(),
+    message: text('message'),
+    location: text('location'),
+    updatedBy: uuid('updated_by').references(() => users.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
 /* 

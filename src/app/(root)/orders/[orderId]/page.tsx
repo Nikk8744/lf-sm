@@ -5,10 +5,40 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, CalendarDays, CreditCard, Package, ShoppingBag, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  CreditCard,
+  Package,
+  ShoppingBag,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Order } from "../../../../../types";
+import { TrackingTimeline } from "@/components/TrackingTimeline";
+
+// interface TrackingStatus {
+//   currentStatus: string;
+//   estimatedDeliveryDate: string;
+//   trackingHistory: {
+//     status: string;
+//     message: string;
+//     location: string;
+//     createdAt: string;
+//   }[];
+// }
+
+interface TrackingStep {
+  id: string;
+  status: string;
+  message?: string | null;
+  location?: string | null;
+  createdAt: Date;
+  updatedBy: string;
+}
+
 
 const OrderDetailPage = () => {
   // const orderId = params.orderId as string;
@@ -17,6 +47,8 @@ const OrderDetailPage = () => {
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tracking, setTracking] = useState<TrackingStep[]>([]);
+  const [isLoadingTracking, setIsLoadingTracking] = useState(true);
 
   useEffect(() => {
     if (!orderId) return;
@@ -47,8 +79,24 @@ const OrderDetailPage = () => {
       }
     };
 
+    const fetchTracking = async () => {
+      try {
+        setIsLoadingTracking(true);
+        const response = await fetch(`/api/orders/${params.orderId}/tracking`);
+        if (!response.ok) throw new Error("Failed to fetch tracking");
+        const data = await response.json();
+        setTracking(data);
+      } catch (error) {
+        console.error("Error fetching tracking:", error);
+        setTracking([]);
+      } finally {
+        setIsLoadingTracking(false);
+      }
+    };
+
     fetchOrderDetails();
-  }, [orderId]);
+    fetchTracking();
+  }, [orderId, params.orderId]);
 
   const getStatusColor = (
     status: string
@@ -107,6 +155,8 @@ const OrderDetailPage = () => {
       </Card>
     );
   }
+
+  // if (!tracking) return <div>No tracking information available</div>;
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -244,6 +294,33 @@ const OrderDetailPage = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="lg:col-span-3 mt-8">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Truck className="h-5 w-5" />
+            <CardTitle>Tracking History</CardTitle>
+          </div>
+        </CardHeader>
+        <Separator />
+        <CardContent className="pt-6">
+          {isLoadingTracking ? (
+            <div className="space-y-4">
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          ) : tracking?.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No tracking updates available
+            </div>
+          ) : (
+            <TrackingTimeline
+              steps={tracking}
+              currentStatus={order.orderStatus}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -14,7 +14,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     try {
         validatePaymentIntent(paymentIntent);
 
-        // Parse the simplified items from metadata
+        // aprse the simplified items from metadata
         console.log("Raw metadata:", paymentIntent.metadata);
         const simplifiedItems = JSON.parse(paymentIntent.metadata.itemsJson || '[]');
         console.log("Parsed items:", simplifiedItems);
@@ -24,7 +24,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
             throw new Error('Shipping address not found in payment intent metadata');
         }
 
-        // If we get here, we know we have enough inventory
+        // uf we get here, we know we have enough inventory
         const completeItems = await Promise.all(
             simplifiedItems.map(async (item: { productId: string; quantity: number }) => {
                 const [product] = await db

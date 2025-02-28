@@ -1,5 +1,5 @@
 import { db } from "@/database/drizzle";
-import { orderItems, orders, products } from "@/database/schema";
+import { orderItems, orders, orderTracking, products } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
 import { createOrderSchema } from "@/lib/validations";
 import { desc, eq, sql } from "drizzle-orm";
@@ -104,6 +104,13 @@ export async function POST(request: NextRequest) {
                 })
                 .where(eq(products.id, item.productId));
         }));
+
+        await db.insert(orderTracking).values({
+            orderId: newOrder.id,
+            status: 'ORDER_PLACED' as any,
+            message: 'Order has been placed successfully',
+            updatedBy: userId,
+        });
 
         return NextResponse.json({
             success: true,
