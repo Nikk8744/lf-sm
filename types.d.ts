@@ -118,3 +118,17 @@ export interface Plan {
     planId: string;
     deliverySchedule: DeliverySchedule;
   }
+
+  interface SendSubscriptionConfirmationEmailParams {
+    to: string;
+    customerName: string;
+    planName: string;
+    price: string;
+    interval: string;
+    deliverySchedule: {
+      preferredDay: string;
+      preferredTime: string;
+      address: string;
+      instructions?: string;
+    };
+  }

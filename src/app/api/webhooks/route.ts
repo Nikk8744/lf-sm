@@ -1,12 +1,14 @@
 import { db } from "@/database/drizzle";
-import { orderItems, products, subscriptions, users } from "@/database/schema";
+import { deliverySchedules, orderItems, products, subscriptionPlans, subscriptions, users } from "@/database/schema";
 import { validatePaymentIntent } from "@/lib/helpers/payment";
-import { sendOrderConfirmationEmail } from "@/lib/resend";
+import { sendOrderConfirmationEmail, sendSubscriptionConfirmationEmail } from "@/lib/resend";
 import { stripe } from "@/lib/stripe";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+
+type SubscriptionStatus = 'ACTIVE' | 'PAUSED' | 'CANCELLED';
 
 async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     try {
@@ -168,6 +170,76 @@ async function sendConfirmationEmail(paymentIntent: Stripe.PaymentIntent, orderR
     }
 }
 
+async function sendSubscriptionEmail(subscription: Stripe.Subscription) {
+    try {
+        let userId = subscription.metadata?.userId;
+        
+        // If not in metadata, try to get from customer
+        if (!userId && subscription.customer) {
+            const customer = await stripe.customers.retrieve(
+                typeof subscription.customer === 'string' 
+                    ? subscription.customer 
+                    : subscription.customer.id
+            ) as Stripe.Customer;
+             // Check if customer is not deleted and has metadata
+             if (!('deleted' in customer) && customer.metadata?.userId) {
+                userId = customer.metadata.userId;
+            }
+        }
+
+        if (!userId) {
+            console.error("No userId found in subscription or customer metadata");
+            return;
+        }
+
+        // Get user and plan details from database
+        const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, subscription.metadata.userId));
+
+        if (!user?.email) {
+            throw new Error("User email not found");
+        }
+
+        // Get subscription details from our database
+        const [dbSubscription] = await db
+            .select({
+                subscription: subscriptions,
+                plan: subscriptionPlans,
+                delivery: deliverySchedules,
+            })
+            .from(subscriptions)
+            .where(eq(subscriptions.stripeSubscriptionId, subscription.id))
+            .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
+            .leftJoin(deliverySchedules, eq(subscriptions.id, deliverySchedules.subscriptionId));
+
+        if (!dbSubscription) {
+            throw new Error("Subscription details not found");
+        }
+
+        await sendSubscriptionConfirmationEmail({
+            to: user.email,
+            customerName: user.name || "Valued Customer",
+            planName: dbSubscription.plan.name,
+            price: dbSubscription.plan.price,
+            interval: dbSubscription.plan.interval,
+            deliverySchedule: {
+                preferredDay: dbSubscription.delivery.preferredDay,
+                preferredTime: dbSubscription.delivery.preferredTime,
+                address: dbSubscription.delivery.address,
+                instructions: dbSubscription.delivery.instructions || undefined,
+            },
+        });
+
+        console.log("Subscription confirmation email sent successfully");
+    } catch (error) {
+        console.error("Error sending subscription confirmation email:", error);
+        throw error;
+    }
+}
+
+
 export async function POST(req: Request) {
     console.log(" 🔥🔥🔥🔥Webhook endpoint hittttttt", new Date().toISOString());
     // get the payload that is coming fromn stripe and store it in text format not json
@@ -211,13 +283,22 @@ export async function POST(req: Request) {
 
             try {
 
-                const orderResult = await createOrder(paymentIntent);
-                console.log("Order created successfully", orderResult)
+                // Check if this is a subscription-related payment
+                if (paymentIntent.metadata?.type === 'subscription') {
+                    // Handle subscription payment differently
+                    console.log("Subscription payment processed successfully");
+                    return NextResponse.json({ success: true });
+                }
+                if (!paymentIntent.metadata.type || paymentIntent.metadata.type === 'order'){
 
-                await sendConfirmationEmail(paymentIntent, orderResult);
-                console.log("Comnfirmation Email sent successfully")
-
-                return NextResponse.json({ success: true, order: orderResult.order.id, message: "Order created and email sent successfully" });
+                    const orderResult = await createOrder(paymentIntent);
+                    console.log("Order created successfully", orderResult)
+                    
+                    await sendConfirmationEmail(paymentIntent, orderResult);
+                    console.log("Comnfirmation Email sent successfully")
+                    return NextResponse.json({ success: true, order: orderResult.order.id, message: "Order created and email sent successfully" });
+                }
+                return NextResponse.json({ success: true });
 
             } catch (error) {
                 console.error("Error processing payment intent:", error);
@@ -245,15 +326,26 @@ export async function POST(req: Request) {
 
         if (event.type === "customer.subscription.created" || event.type === "customer.subscription.updated") {
             const subscription = event.data.object as Stripe.Subscription;
-
+            const statusMapping: Record<string, SubscriptionStatus> = {
+                'active': 'ACTIVE',
+                // 'past_due': 'PAST_DUE',
+                'canceled': 'CANCELLED',
+                'paused': 'PAUSED'
+            };
             await db.update(subscriptions)
                 .set({
-                    status: subscription.status.toUpperCase() as 'ACTIVE' | 'PAUSED' | 'CANCELLED',
+                    status: statusMapping[subscription.status],
                     currentPeriodStart: new Date(subscription.current_period_start * 1000),
                     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
                     cancelAtPeriodEnd: subscription.cancel_at_period_end,
                 })
                 .where(eq(subscriptions.stripeSubscriptionId, subscription.id));
+
+            // Send subscription confirmation email
+            if (subscription.status === 'active') {
+                await sendSubscriptionEmail(subscription);
+            }
+            console.log("Subscription confirmation email sent successfully")
 
             return NextResponse.json({ success: true });
         }

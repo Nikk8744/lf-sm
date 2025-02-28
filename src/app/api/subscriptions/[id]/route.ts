@@ -21,45 +21,40 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
             return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
         }
 
-        if (action === "cancel") {
-            await stripe.subscriptions.update(subscription[0].stripeSubscriptionId, {
-                cancel_at_period_end: true,
-            });
-
-            await db.update(subscriptions).set({
-                cancelAtPeriodEnd: true,
-            }).where(eq(subscriptions.id, params.id));
-
-
-            return NextResponse.json({
-                message: "Subscription cancelled successfully",
-                subscription: subscription[0],
-            }, { status: 200 })
-        } else if (action === "resume") {
-            await stripe.subscriptions.update(subscription[0].stripeSubscriptionId, {
-                cancel_at_period_end: false,
-            });
-            await db.update(subscriptions)
-                .set({ status: 'ACTIVE' })
-                .where(eq(subscriptions.id, params.id));
-            return NextResponse.json({
-                message: "Subscription cancelled successfully",
-                subscription: subscription[0],
-            }, { status: 200 })
-        } else if (action === "pause") {
-            await stripe.subscriptions.update(subscription[0].stripeSubscriptionId, {
-                pause_collection: { behavior: 'void' }
-            });
-            await db.update(subscriptions)
-                .set({ status: 'PAUSED' })
-                .where(eq(subscriptions.id, params.id));
-            return NextResponse.json({
-                message: "Subscription cancelled successfully",
-                subscription: subscription[0],
-            }, { status: 200 })
+        switch (action) {
+            case "pause":
+                // return handlePause(session.user.id);
+                await stripe.subscriptions.update(subscription[0].stripeSubscriptionId, {
+                    pause_collection: { behavior: 'void' }
+                });
+                await db.update(subscriptions)
+                    .set({ status: 'PAUSED' })
+                    .where(eq(subscriptions.id, params.id));
+                break;
+            case "cancel":
+                // return handleCancel(session.user.id);
+                await stripe.subscriptions.cancel(subscription[0].stripeSubscriptionId);
+                await db.update(subscriptions)
+                    .set({ status: 'CANCELLED' })
+                    .where(eq(subscriptions.id, params.id));
+                break;
+            case "resume":
+                // return handleResume(session.user.id);
+                await stripe.subscriptions.update(subscription[0].stripeSubscriptionId, {
+                    pause_collection: ''
+                });
+                await db.update(subscriptions)
+                    .set({ status: 'ACTIVE' })
+                    .where(eq(subscriptions.id, params.id));
+                break;
+            default:
+                return NextResponse.json({ error: "Invalid action" }, { status: 400 });
         }
 
-        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+        return NextResponse.json({
+            message: `Subscription ${action}ed successfully`,
+            subscription: subscription[0],
+        }, { status: 200 });
     } catch (error) {
         console.error("Error updating subscription:", error);
         return NextResponse.json({ error: "Failed to update subscription" }, { status: 500 });
@@ -81,10 +76,10 @@ export async function GET(
             plan: subscriptionPlans,
             deliverySchedule: deliverySchedules,
         })
-        .from(subscriptions)
-        .where(eq(subscriptions.id, params.id))
-        .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
-        .leftJoin(deliverySchedules, eq(subscriptions.id, deliverySchedules.subscriptionId));
+            .from(subscriptions)
+            .where(eq(subscriptions.id, params.id))
+            .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
+            .leftJoin(deliverySchedules, eq(subscriptions.id, deliverySchedules.subscriptionId));
 
         if (!subscription || subscription[0].subscriptions.userId !== session.user.id) {
             return NextResponse.json({ error: "Subscription not found" }, { status: 404 });
@@ -102,4 +97,21 @@ export async function GET(
         console.error("Error fetching subscription:", error);
         return NextResponse.json({ error: "Failed to fetch subscription" }, { status: 500 });
     }
+}
+
+async function handlePause(userId: string) {
+    // logic to pause subscription
+
+    return NextResponse.json({ status: 'paused' });
+
+}
+
+async function handleResume(userId: string) {
+    // Implement resume subscription logic
+    return NextResponse.json({ status: 'active' });
+}
+
+async function handleCancel(userId: string) {
+    // Implement cancel subscription logic
+    return NextResponse.json({ status: 'cancelled' });
 }

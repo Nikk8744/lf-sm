@@ -3,7 +3,7 @@ import { deliverySchedules, subscriptionPlans, subscriptions, users } from "@/da
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { createSubscriptionSchema } from "@/lib/validations";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -43,9 +43,10 @@ export async function POST(request: NextRequest) {
         }
 
         const user = await db.select().from(users).where(eq(users.id, session.user.id));
+        let stripeCustomerId = user[0]?.stripeCustomerId;
 
         // Create a new Stripe customer if the user doesn't have one already
-        if(!user[0]?.stripeCustomerId){
+        if(!stripeCustomerId){
             const customer = await stripe.customers.create({
                 email: user[0].email,
                 payment_method: paymentMethodId,
@@ -53,17 +54,18 @@ export async function POST(request: NextRequest) {
                     default_payment_method: paymentMethodId,
                 },
             })
-
+            stripeCustomerId = customer.id;
             await db.update(users).set({
                 stripeCustomerId: customer.id,
             }).where(eq(users.id, session.user.id));
 
-            user[0].stripeCustomerId = customer.id;
         } else {
+            // If customer exists, just attach the payment method
             await stripe.paymentMethods.attach(paymentMethodId, {
-                customer: user[0].stripeCustomerId!,
+                customer: stripeCustomerId,
             });
 
+            // Update customer's default payment method
             await stripe.customers.update(user[0].stripeCustomerId!, {
                 // payment_method: paymentMethodId,
                 invoice_settings: {
@@ -76,11 +78,17 @@ export async function POST(request: NextRequest) {
         let stripeSubscription;
         try {
             stripeSubscription = await stripe.subscriptions.create({
-                customer: customer.id,
+                customer: stripeCustomerId,
                 items: [{ price: plan[0].stripePriceId }],
                 payment_behavior: "default_incomplete",
                 payment_settings: {
+                    payment_method_types: ['card'],
                     save_default_payment_method: "on_subscription",
+                },
+                metadata: {
+                    userId: session.user.id,
+                    planId: planId,
+                    type: 'subscription'
                 },
                 expand: ["latest_invoice.payment_intent"],
             });
@@ -144,3 +152,54 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Failed to create subscription" }, { status: 500 });
     }
 }
+
+export async function GET() {
+    try {
+      const session = await getServerSession(authOptions);
+      if (!session) {
+        return new NextResponse("Unauthorized", { status: 401 });
+      }
+  
+      // Fetch all subscriptions for the user with related plan and delivery schedule info
+      const userSubscriptions = await db
+        .select({
+          subscription: subscriptions,
+          plan: subscriptionPlans,
+          deliverySchedule: deliverySchedules,
+        })
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, session.user.id))
+        .leftJoin(subscriptionPlans, eq(subscriptions.planId, subscriptionPlans.id))
+        .leftJoin(deliverySchedules, eq(subscriptions.id, deliverySchedules.subscriptionId))
+        .orderBy(desc(subscriptions.createdAt));
+  
+      // Transform the data to match the frontend interface
+      const formattedSubscriptions = userSubscriptions.map(({ subscription, plan, deliverySchedule }) => ({
+        id: subscription.id,
+        status: subscription.status,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        currentPeriodStart: subscription.currentPeriodStart,
+        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        plan: {
+          name: plan?.name,
+          price: plan?.price,
+          interval: plan?.interval,
+          maxProducts: plan?.maxProducts,
+        },
+        deliverySchedule: {
+          preferredDay: deliverySchedule?.preferredDay,
+          preferredTime: deliverySchedule?.preferredTime,
+          address: deliverySchedule?.address,
+          instructions: deliverySchedule?.instructions,
+        },
+      }));
+  
+      return NextResponse.json(formattedSubscriptions);
+    } catch (error) {
+      console.error('Error fetching subscriptions:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch subscriptions' },
+        { status: 500 }
+      );
+    }
+  }

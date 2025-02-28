@@ -42,8 +42,8 @@ const PaymentForm = ({ selectedPlan, deliverySchedule, onSuccess, onError }: Pay
         },
       });
 
-      if (submitError) {
-        throw submitError;
+      if (paymentMethodError) {
+        throw paymentMethodError;
       }
 
       // Create subscription with the PaymentMethod
@@ -52,7 +52,7 @@ const PaymentForm = ({ selectedPlan, deliverySchedule, onSuccess, onError }: Pay
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planId: selectedPlan.id,
-          paymentMethodId: paymentMethod.id,
+          paymentMethodId: paymentMethod?.id,
           deliverySchedule,
         }),
       });

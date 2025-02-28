@@ -28,22 +28,24 @@ export async function POST(request: NextRequest) {
         }
 
         // Create SetupIntent
-        // const setupIntent = await stripe.setupIntents.create({
-        //     payment_method_types: ['card'],
-        //     metadata: {
-        //         planId: planId,
-        //     },
-        // });
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(Number(plan[0].price) * 100), // Convert to cents
-            currency: 'usd',
+        const setupIntent = await stripe.setupIntents.create({
+            payment_method_types: ['card'],
             metadata: {
                 planId: planId,
-                userId: session.user.id,
             },
+            usage: 'off_session',
         });
+        // const paymentIntent = await stripe.paymentIntents.create({
+        //     amount: Math.round(Number(plan[0].price) * 100), // Convert to cents
+        //     currency: 'usd',
+        //     metadata: {
+        //         planId: planId,
+        //         userId: session.user.id,
+        //     },
+        // });
         return NextResponse.json({
-            clientSecret: paymentIntent.client_secret,
+            // clientSecret: paymentIntent.client_secret,
+            clientSecret: setupIntent.client_secret,
         });
 
     } catch (error) {
