@@ -48,7 +48,7 @@ const RecentOrders = () => {
       <TableHeader>
         <TableRow>
           <TableHead>Order ID</TableHead>
-          <TableHead>Customer</TableHead>
+          <TableHead>Customer ID</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Date</TableHead>
           <TableHead className="text-right">Amount</TableHead>
@@ -61,8 +61,8 @@ const RecentOrders = () => {
             <TableCell>{order.customerName}</TableCell>
             <TableCell>
               <Badge variant={
-                order.status === 'COMPLETED' ? 'success' :
-                order.status === 'PENDING' ? 'warning' : 'default'
+                order.status === 'COMPLETED' ? 'myVariant' :
+                order.status === 'PENDING' ? 'destructive' : 'default'
               }>
                 {order.status}
               </Badge>

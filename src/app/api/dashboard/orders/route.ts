@@ -29,12 +29,12 @@ export async function GET() {
         .groupBy(orders.id, orders.createdAt, orders.orderStatus, orders.paymentStatus, users.name)
         .orderBy(desc(orders.createdAt));
 
-        console.log("The farmer orders are:", farmerOrders);
+        // console.log("The farmer orders are:", farmerOrders);
 
         const orderWithItsItems = await Promise.all(
             farmerOrders.map(async (order) => {
                 const items = await db.select({
-                    name: users.name,
+                    name: products.name,
                     quantity: orderItems.quantity,
                     // unitPrice: orderItems.unitPrice,
                     totalPrice: orderItems.totalPrice,

@@ -27,7 +27,7 @@ interface Order {
   paymentStatus: "PENDING" | "COMPLETED" | "FAILED";
   customerName: string;
   totalAmount: number;
-  items?: OrderItem[];
+  items: OrderItem[];
 }
 
 const FarmerOrdersPage = () => {
@@ -41,7 +41,7 @@ const FarmerOrdersPage = () => {
         const response = await fetch("/api/dashboard/orders");
         if (!response.ok) throw new Error("Failed to fetch orders");
         const data = await response.json();
-        console.log("The data is", data);
+        // console.log("The data is", data);
         if (Array.isArray(data)) {
             setOrders(data);
           } else {
@@ -69,20 +69,20 @@ const FarmerOrdersPage = () => {
       case "DELIVERED":
         return "default";
       case "SHIPPED":
-        return "secondary";
+        return "default";
       default:
-        return "warning";
+        return "destructive";
     }
   };
 
   const getPaymentStatusColor = (status: Order["paymentStatus"]) => {
     switch (status) {
       case "COMPLETED":
-        return "success";
+        return "myVariant";
       case "FAILED":
         return "destructive";
       default:
-        return "warning";
+        return "default";
     }
   };
 
@@ -103,18 +103,18 @@ const FarmerOrdersPage = () => {
     );
   }
 
-//    if (!loading && orders.length === 0) {
-//     return (
-//       <div className="space-y-6">
-//         <h2 className="text-3xl font-bold tracking-tight">Orders</h2>
-//         <Card>
-//           <CardContent className="p-6 text-center text-muted-foreground">
-//             No orders found
-//           </CardContent>
-//         </Card>
-//       </div>
-//     );
-//   }
+   if (!loading && orders.length === 0) {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold tracking-tight">Orders</h2>
+        <Card>
+          <CardContent className="p-6 text-center text-muted-foreground">
+            No orders found
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -156,8 +156,7 @@ const FarmerOrdersPage = () => {
                   </TableCell>
                   <TableCell>
                     <div className="max-w-[200px] truncate">
-                      {/* {order.items.map((item) => item.name).join(", ")} */}
-                      hello
+                      {order?.items.map((item) => item.name).join(", ")}
                     </div>
                   </TableCell>
                 </TableRow>
