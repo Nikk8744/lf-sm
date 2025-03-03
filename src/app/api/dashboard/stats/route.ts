@@ -8,7 +8,7 @@ import { and, eq, sql } from "drizzle-orm";
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session /*|| session.user.role !== "FARMER" */) {
+    if (!session || session.user.role !== "FARMER") {
       return new Response("Unauthorized", { status: 401 });
     }
 

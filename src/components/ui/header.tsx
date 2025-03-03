@@ -21,6 +21,7 @@ import { Badge } from "./badge";
 function Header1() {
   const [isOpen, setOpen] = useState(false);
   const { data: session } = useSession();
+  console.log({session});
   const cart = useCartStore((state) => state.cart);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -103,7 +104,7 @@ function Header1() {
                         User Details
                       </Button>
                     </Link>
-                    <Link href="/dashboard/subscriptions">
+                    <Link href="/subscriptions">
                       <Button
                         variant="default"
                         className="w-full text-left mt-2"

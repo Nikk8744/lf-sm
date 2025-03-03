@@ -8,7 +8,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
     try {
         const session = await getServerSession(authOptions)
-        if(!session){
+        if(!session || session.user.role !== "FARMER"){
             return new Response("Unauthorized", {status: 401})
         }
 
