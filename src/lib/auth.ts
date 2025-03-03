@@ -17,7 +17,6 @@ export const authOptions: NextAuthOptions = {
                 if(!credentials?.email || !credentials?.password){
                     throw new Error("Missing email or password!!")
                 }
-
                 try {
                     const user = await db.select().from(users).where(eq(users.email, credentials.email.toString())).limit(1);
                     if(user.length == 0) return null;
@@ -29,12 +28,11 @@ export const authOptions: NextAuthOptions = {
                     if(!isPasswordValid){
                         throw new Error("Invalid password");
                     }
-
                     return {
                         id: user[0].id.toString(),
                         email: user[0].email,
                         name: user[0].name,
-                        role: user[0].role,
+                        role: user[0].role || "USER",
                     }
                 } catch (error) {
                     throw error
@@ -47,15 +45,17 @@ export const authOptions: NextAuthOptions = {
             if(user){
                 token.id = user.id
                 token.name = user.name
-                // token.role = user.role
+                token.role = user.role || "USER"
             }
+            // console.log("The token isss",token)
             return token;
         },
         async session({session, token}) {
+            // console.log("The session isss",session)
             if(session.user){
                 session.user.id = token.id as string;
                 session.user.name = token.name as string;
-                // session.user.role = token.role as string;
+                session.user.role = token.role as string;
             }
 
             return session

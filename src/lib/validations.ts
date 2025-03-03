@@ -25,7 +25,7 @@ export const productSchema = z.object({
   image: z.string().url("Invalid image URL"),
   category: z.string().min(1, "Category is required"),
   farmLocation: z.string().min(1, "Farm location is required"),
-  quantity: z.number().min(0, "Quantity must be 0 or greater"),
+  quantity: z.coerce.number().min(0, "Quantity must be 0 or greater"),
 })
 
 export const productUpdateSchema = productSchema.partial();

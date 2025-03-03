@@ -8,6 +8,22 @@ declare module "next-auth" {
     user: {
       /** The user's postal address. */
       id: string,
+      role: string,
     } & DefaultSession["user"];
+  }
+
+  
+  interface User {
+    id: string;
+    role: string; // Ensure role is a string, not nullable
+    name: string;
+    email: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string; // Ensure role is a string, not nullable
   }
 }

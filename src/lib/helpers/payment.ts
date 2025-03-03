@@ -14,9 +14,8 @@ export function validatePaymentIntent(paymentIntent: Stripe.PaymentIntent) {
     try {
         JSON.parse(paymentIntent.metadata.itemsJson);
     } catch (error) {
-        throw new Error('Invalid itemsJson format in metadata');
+        throw new Error('Invalid itemsJson format in metadata', { cause: error });
     }
-
 
     const requiredFields = {
         id: paymentIntent.id,
