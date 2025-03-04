@@ -18,7 +18,9 @@ export async function GET(request: NextRequest) {
         const filters = [];
         const limitParam = parseInt(searchParams.get('page') || '1');
         const limitSize = 16;
+        const limit = parseInt(searchParams.get("limit") || '0');
         // const limitValue = limitParam ? parseInt(limitParam) : undefined;
+
 
         if(query) {
             filters.push(
@@ -27,7 +29,7 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        console.log("The page issssss:::::",limitParam);
+        // console.log("The page issssss:::::",limitParam);
 
         if(category && category !== "") {
             // Use ilike for case-insensitive comparison
@@ -76,7 +78,17 @@ export async function GET(request: NextRequest) {
                 .orderBy();
         }
 
-        console.log("The products are here",allProducts)
+        if (limit){
+            allProducts = await db
+                .select()
+                .from(products)
+                .where(whereClause)
+                .orderBy(desc(products.createdAt))
+                .limit(limit);
+
+                return NextResponse.json(allProducts)
+        }
+        // console.log("The products are here",allProducts)
 
         if(!allProducts || allProducts.length === 0){
             return NextResponse.json(
