@@ -16,14 +16,18 @@ export async function GET(request: NextRequest) {
         const maxPrice = searchParams.get("maxPrice");
         const farmLocation = searchParams.get("farmLocation");
         const filters = [];
-        const limitParam = searchParams.get("limit");
-        const limitValue = limitParam ? parseInt(limitParam) : undefined;
+        const limitParam = parseInt(searchParams.get('page') || '1');
+        const limitSize = 16;
+        // const limitValue = limitParam ? parseInt(limitParam) : undefined;
+
         if(query) {
             filters.push(
                 sql`(LOWER(${products.name}) LIKE ${`%${query}%`} OR 
                     LOWER(${products.description}) LIKE ${`%${query}%`})`
             )
         }
+
+        console.log("The page issssss:::::",limitParam);
 
         if(category && category !== "") {
             // Use ilike for case-insensitive comparison
@@ -48,15 +52,22 @@ export async function GET(request: NextRequest) {
         // console.log("Generated SQL:", whereClause);
         // console.log("The where clause issss",whereClause)
        
+        const totalCountResult = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(products)
+            .where(whereClause);
+        
+        const totalCount = totalCountResult[0]?.count || 0;
 
         let allProducts;
-        if (limitValue) {
+        if (limitSize) {
             allProducts = await db
                 .select()
                 .from(products)
                 .where(whereClause)
                 .orderBy(desc(products.createdAt))
-                .limit(limitValue);
+                .limit(limitSize)
+                .offset((limitParam - 1) * limitSize);
         } else {
             allProducts = await db
                 .select()
@@ -65,7 +76,7 @@ export async function GET(request: NextRequest) {
                 .orderBy();
         }
 
-        // console.log("The products are here",allProducts)
+        console.log("The products are here",allProducts)
 
         if(!allProducts || allProducts.length === 0){
             return NextResponse.json(
@@ -74,7 +85,13 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        return NextResponse.json(allProducts)
+        // return NextResponse.json(allProducts)
+        return NextResponse.json({
+            products: allProducts,
+            totalPages: Math.ceil(totalCount / limitSize),
+            currentPage: limitParam,
+            totalProducts: totalCount
+        });
     } catch (error) {
         console.log("Error while fetching products",error)
         return NextResponse.json(

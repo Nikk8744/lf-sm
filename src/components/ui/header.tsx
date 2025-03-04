@@ -100,18 +100,28 @@ function Header1() {
                   </PopoverTrigger>
                   <PopoverContent className="w-48 bg-white p-4 shadow-lg rounded-md">
                     <Link href="/user-details">
-                      <Button variant="myVariant" className="w-full text-left">
+                      <Button variant="default" className="w-full text-left">
                         User Details
                       </Button>
                     </Link>
                     <Link href="/subscriptions">
                       <Button
-                        variant="default"
+                        variant="outline"
                         className="w-full text-left mt-2"
                       >
                         My Subscriptions
                       </Button>
                     </Link>
+                    {session.user?.role === "FARMER" && (
+                      <Link href="/dashboard/farmer">
+                        <Button
+                          variant="myVariantBtn"
+                          className="w-full text-left mt-2"
+                        >
+                          Dashboard
+                        </Button>
+                      </Link>
+                    )}
                     <Button
                       variant="destructive"
                       className="w-full mt-2"

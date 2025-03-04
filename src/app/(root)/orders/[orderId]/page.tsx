@@ -162,7 +162,7 @@ const OrderDetailPage = () => {
     <div className="container mx-auto py-12 px-4">
       <div className="flex items-center gap-4 mb-8">
         <Button
-          variant="myVariant"
+          variant='link'
           onClick={() => router.push("/orders")}
           className="flex items-center gap-2"
         >

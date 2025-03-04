@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { ChevronRight, CreditCard, MapPin, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Order } from "../../../../types";
 
 const OrdersPage = () => {
   const router = useRouter();
@@ -41,13 +42,13 @@ const OrdersPage = () => {
   const getStatusColor = (status: string): "secondary" | "destructive" | "default" | "outline" | "myVariant" => {
     switch (status.toLowerCase()) {
       case 'pending':
-        return 'secondary' // Changed from 'warning'
+        return 'secondary' 
       case 'processing':
         return 'secondary'
       case 'shipped':
-        return 'outline' // Changed from 'info'
+        return 'outline' 
       case 'delivered':
-        return 'myVariant' // Changed from 'success'
+        return 'myVariant'
       case 'cancelled':
         return 'destructive'
       default:
@@ -102,7 +103,7 @@ const OrdersPage = () => {
       <h1 className="text-4xl font-bold">Order History</h1>
       <Button 
         onClick={() => router.push("/products")}
-        variant="myVariant"
+        variant="myVariantBtn"
       >
         Continue Shopping
       </Button>
