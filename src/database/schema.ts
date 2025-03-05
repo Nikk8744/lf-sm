@@ -36,7 +36,7 @@ export const ORDER_STATUS_ENUM = pgEnum('order_status', ['PENDING', 'SHIPPED', '
 
 export const orders = pgTable('orders', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
-    userId: uuid('user_id').notNull().references(() => users.id),
+    userId: uuid('user_id').notNull().references(() => users.id, /* { onDelete: 'cascade' } */),
     totalAmount: decimal('total_amount').notNull(),
     // shippingAddress: uuid('shipping_address').notNull().references(() => userAddress.id),
     shippingAddress: text('shipping_address').notNull(),

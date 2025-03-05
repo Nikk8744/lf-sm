@@ -21,7 +21,7 @@ import { Badge } from "./badge";
 function Header1() {
   const [isOpen, setOpen] = useState(false);
   const { data: session } = useSession();
-  console.log({session});
+  // console.log({session});
   const cart = useCartStore((state) => state.cart);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
 

@@ -130,7 +130,7 @@ const FarmerOrdersPage = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update order status",
+        description: `Failed to update order status, ${error}`,
         variant: "destructive",
       });
     } finally {
@@ -177,7 +177,7 @@ const FarmerOrdersPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
+                <TableHead>Customer ID</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Payment</TableHead>
                 <TableHead>Amount</TableHead>

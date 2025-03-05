@@ -27,7 +27,7 @@ export async function GET() {
       .innerJoin(orderItems, eq(orders.id, orderItems.orderId))
       .innerJoin(products, eq(orderItems.productId, products.id))
       .where(eq(products.farmerId, farmerId));
-    console.log("Total orders are", totalOrders);
+    // console.log("Total orders are", totalOrders);
 
     // Get revenue
     const revenue = await db
@@ -40,7 +40,7 @@ export async function GET() {
         and(
           eq(products.farmerId, farmerId),
           eq(orders.paymentStatus, "COMPLETED")
-        )
+        ) 
       );
 
     return NextResponse.json({

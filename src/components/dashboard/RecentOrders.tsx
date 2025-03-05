@@ -48,7 +48,7 @@ const RecentOrders = () => {
       <TableHeader>
         <TableRow>
           <TableHead>Order ID</TableHead>
-          <TableHead>Customer ID</TableHead>
+          <TableHead>Customer</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Date</TableHead>
           <TableHead className="text-right">Amount</TableHead>

@@ -1,7 +1,7 @@
 import { db } from "@/database/drizzle";
 import { orderItems, orders, products, users } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -19,17 +19,18 @@ export async function GET() {
             createdAt: orders.createdAt,
             status: orders.orderStatus,
             customerName: users.name,
-            total: orderItems.totalPrice,
+            total: sql`SUM(${orderItems.totalPrice})`.mapWith(Number),
         }).from(orders)
         .innerJoin(users, eq(orders.userId, users.id))
         .innerJoin(orderItems, eq(orders.id, orderItems.orderId))
         .innerJoin(products, eq(orderItems.productId, products.id))
         .where(eq(products.farmerId, farmerId))
+        .groupBy(orders.id, orders.createdAt, orders.orderStatus, users.name)
         .orderBy(desc(orders.createdAt))
         .limit(5);
 
 
-        console.log("The recent orders are:", recentOrders);
+        // console.log("The recent orders are:", recentOrders);
         return NextResponse.json(recentOrders);
         // return new Response(JSON.stringify(recentOrders));
     } catch (error) {
