@@ -7,11 +7,33 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-// Helper function to map tracking status to order status
-function getOrderStatus(trackingStatus: string) {
-    if (['ORDER_RECEIVED', 'PAYMENT_CONFIRMED', 'PROCESSING', 'PACKED'].includes(trackingStatus)) {
+
+// Define the type for tracking status
+type TrackingStatus = 
+    | 'ORDER_PLACED'
+    | 'CONFIRMED'
+    | 'PROCESSING'
+    | 'PACKED'
+    | 'SHIPPED'
+    | 'OUT_FOR_DELIVERY'
+    | 'DELIVERED';
+
+// Add type to the messages object
+export const defaultTrackingMessages: Record<TrackingStatus, string> = {
+    ORDER_PLACED: "Order has been placed successfully",
+    CONFIRMED: "Payment has been confirmed",
+    PROCESSING: "Order is being processed",
+    PACKED: "Order has been packed and ready for shipping",
+    SHIPPED: "Order has been shipped and is on its way",
+    OUT_FOR_DELIVERY: "Order is out for delivery",
+    DELIVERED: "Order has been delivered successfully"
+};
+
+// Helper function with proper typing
+function getOrderStatus(trackingStatus: TrackingStatus): 'PENDING' | 'SHIPPED' | 'DELIVERED' {
+    if (['ORDER_PLACED', 'CONFIRMED', 'PROCESSING', 'PACKED'].includes(trackingStatus)) {
         return 'PENDING';
-    } else if (['PICKED_BY_COURIER', 'IN_TRANSIT', 'OUT_FOR_DELIVERY'].includes(trackingStatus)) {
+    } else if (['SHIPPED', 'OUT_FOR_DELIVERY'].includes(trackingStatus)) {
         return 'SHIPPED';
     } else if (trackingStatus === 'DELIVERED') {
         return 'DELIVERED';
@@ -29,11 +51,13 @@ export async function POST(request: NextRequest,  { params }: {params: { orderId
         const body = await request.json();
         const validatedData = trackingUpdateSchema.parse(body);
 
+        const trackingMessage = validatedData.message || defaultTrackingMessages[validatedData.status] || `Status updated to ${validatedData.status}`;
+
 
         const [newTracking] = await db.insert(orderTracking).values({
             orderId: params.orderId,
-            status: validatedData.status as any,
-            message: validatedData.message,
+            status: validatedData.status,
+            message: trackingMessage,
             location: validatedData.location,
             updatedBy: session?.user.id,
         }).returning();

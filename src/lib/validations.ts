@@ -80,15 +80,13 @@ export const createSubscriptionSchema = z.object({
 
 export const trackingUpdateSchema = z.object({
   status: z.enum([
-      'ORDER_RECEIVED',
-      'PAYMENT_CONFIRMED',
-      'PROCESSING',
-      'PACKED',
-      'PICKED_BY_COURIER',
-      'IN_TRANSIT',
-      'OUT_FOR_DELIVERY',
-      'DELIVERED',
-      'DELIVERY_FAILED'
+      'ORDER_PLACED',
+        'CONFIRMED',
+        'PROCESSING',
+        'PACKED',
+        'SHIPPED',
+        'OUT_FOR_DELIVERY',
+        'DELIVERED'
   ]),
   message: z.string().optional(),
   location: z.string().optional(),

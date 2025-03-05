@@ -1,5 +1,6 @@
+import { defaultTrackingMessages } from "@/app/api/orders/[orderId]/tracking/route";
 import { db } from "@/database/drizzle";
-import { orders } from "@/database/schema";
+import { orders, orderTracking } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
@@ -19,6 +20,15 @@ export async function PATCH(request: Request, { params }: { params: { orderId: s
             .set({ orderStatus: status, updatedAt: new Date() })
             .where(eq(orders.id, params.orderId))
             .returning();
+
+        // Update order tracking status 
+        await db.update(orderTracking)
+            .set({ 
+                status, 
+                message: defaultTrackingMessages[status] || `Status updated to ${status}`,
+                updatedBy: session.user.id,
+            })
+            .where(eq(orderTracking.orderId, params.orderId));
 
         return NextResponse.json({
             message: "Order status updated successfully",
