@@ -6,7 +6,8 @@ import {
   Package, 
   ShoppingCart, 
   Settings,
-  BarChart3
+  BarChart3,
+  BookmarkCheck
 } from "lucide-react";
 
 const navItems = [
@@ -24,6 +25,11 @@ const navItems = [
     title: "Orders",
     href: "/dashboard/farmer/orders",
     icon: ShoppingCart,
+  },
+  {
+    title: "Subscriptions",
+    href: "/dashboard/farmer/subscriptions",
+    icon: BookmarkCheck,
   },
   {
     title: "Analytics",

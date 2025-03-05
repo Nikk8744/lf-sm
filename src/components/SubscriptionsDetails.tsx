@@ -66,7 +66,7 @@ const SubscriptionsDetails = () => {
       });
     } catch (error) {
       toast({
-        title: "Error",
+        title: `Error, ${error}`,
         description: `Failed to ${action} subscription`,
         variant: "destructive",
       });

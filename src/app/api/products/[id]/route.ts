@@ -23,7 +23,7 @@ export async function GET(
     if (!product) {
       return new NextResponse('Product not found', { status: 404 });
     }
-    console.log("The product is",product);
+    // console.log("The product is",product);
 
     return NextResponse.json(product);
   } catch (error) {
@@ -51,7 +51,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
               { status: 400 }
           );
       }
-      console.log("The id is",id)
+    //   console.log("The id is",id)
       // console.log("The farmser id is",farmerId === products.farmerId)
       // console.log("The product id is",id === products.id)
       const existingProduct = await db

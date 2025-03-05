@@ -61,8 +61,8 @@ const RecentOrders = () => {
             <TableCell>{order.customerName}</TableCell>
             <TableCell>
               <Badge variant={
-                order.status === 'COMPLETED' ? 'myVariant' :
-                order.status === 'PENDING' ? 'destructive' : 'default'
+                order.status === 'DELIVERED' ? 'myVariant2' :
+                order.status === 'PENDING' ? 'destructive' : 'myVariant'
               }>
                 {order.status}
               </Badge>

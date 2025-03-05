@@ -13,19 +13,20 @@ import {
 } from "@/components/ui/pagination";
 // import SidebarFilter1 from "@/components/SidebarFilter1";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 // export const revalidate = 120;
 
 interface Product {
-  id: string
-  name: string
-  price: number
-  description?: string
-  image?: string
-  farmLocation: string
-  quantity: number
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  image?: string;
+  farmLocation: string;
+  quantity: number;
 }
 
 const ProductsPage = () => {
@@ -67,7 +68,7 @@ const ProductsPage = () => {
         } else {
           setProducts(data.products);
           setCurrentPage(data.currentPage);
-          console.log("The current page isssss::",data.currentPage);
+          console.log("The current page isssss::", data.currentPage);
           setTotalPages(data.totalPages);
         }
       } catch (error) {
@@ -86,7 +87,7 @@ const ProductsPage = () => {
     const search = current.toString();
     // console.log("The current page in handle change isssss::",search);
     const query = search ? `?${search}` : "";
-    console.log("The query isssss::",query);
+    console.log("The query isssss::", query);
     router.push(`/products${query}`);
   };
 
@@ -165,12 +166,30 @@ const ProductsPage = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl">Loading...</h2>
-      </div>
+      <SidebarProvider>
+        <SidebarInset>
+          <div className="flex min-h-screen bg-[#EEEEEE]">
+            <SidebarFilter />
+            <div className="flex-1 p-4 pt-6 flex flex-col min-h-screen">
+              <Skeleton className="h-10 w-48 mb-8 ml-10" /> {/* For heading */}
+              <Skeleton className="h-12 w-full mb-8" /> {/* For search bar */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4, 5, 6, 8].map((i) => (
+                  <div key={i} className="bg-white rounded-lg p-4 space-y-3">
+                    <Skeleton className="h-48 w-full rounded-md" />{" "}
+                    {/* Product image */}
+                    <Skeleton className="h-6 w-3/4" /> {/* Product name */}
+                    <Skeleton className="h-4 w-1/4" /> {/* Price */}
+                    <Skeleton className="h-8 w-full" /> {/* Button */}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
     );
   }
-
   // console.log("The response issss",products)
 
   return (
@@ -240,7 +259,6 @@ const ProductsPage = () => {
                     </PaginationContent>
                   </Pagination>
                 </div>
-
               </div>
             )}
           </div>

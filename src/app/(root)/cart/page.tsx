@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import CartLoading from "./CartLoading";
 
 export default function CartPage() {
   const { data: session, status } = useSession();
@@ -92,6 +93,12 @@ export default function CartPage() {
   const handleRemove = useCallback((productId: string) => {
     removeFromCart(productId);
   }, [removeFromCart]);
+
+  if(isLoading){
+    return <div>
+      <CartLoading />
+    </div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">

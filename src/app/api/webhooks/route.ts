@@ -292,7 +292,7 @@ export async function POST(req: Request) {
                 if (!paymentIntent.metadata.type || paymentIntent.metadata.type === 'order'){
 
                     const orderResult = await createOrder(paymentIntent);
-                    console.log("Order created successfully", orderResult)
+                    // console.log("Order created successfully", orderResult)
                     
                     await sendConfirmationEmail(paymentIntent, orderResult);
                     console.log("Comnfirmation Email sent successfully")
