@@ -105,30 +105,48 @@ export interface Plan {
     maxProducts: number;
     stripeProductId: string;
     stripePriceId: string;
-  }
-  
-  export interface DeliverySchedule {
+}
+
+export interface DeliverySchedule {
     preferredDay: string;
     preferredTime: string;
     address: string;
     instructions?: string;
-  }
-  
-  export interface SubscriptionFormData {
+}
+
+export interface SubscriptionFormData {
     planId: string;
     deliverySchedule: DeliverySchedule;
-  }
+}
 
-  interface SendSubscriptionConfirmationEmailParams {
+interface SendSubscriptionConfirmationEmailParams {
     to: string;
     customerName: string;
     planName: string;
     price: string;
     interval: string;
     deliverySchedule: {
-      preferredDay: string;
-      preferredTime: string;
-      address: string;
-      instructions?: string;
+        preferredDay: string;
+        preferredTime: string;
+        address: string;
+        instructions?: string;
     };
-  }
+}
+
+export type NotificationType = 
+| 'ORDER_STATUS' 
+| 'PAYMENT_STATUS'
+| 'DELIVERY_UPDATE'
+| 'SUBSCRIPTION_UPDATE'
+| 'GENERAL';
+
+export interface Notification {
+    id: string;
+    type: NotificationType;
+    title: string;
+    message: string;
+    data?: Record<string, any>;
+    createdAt: string;
+    isRead: boolean;
+    userId: string;
+}
