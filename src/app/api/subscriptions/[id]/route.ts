@@ -98,20 +98,3 @@ export async function GET(
         return NextResponse.json({ error: "Failed to fetch subscription" }, { status: 500 });
     }
 }
-
-async function handlePause(userId: string) {
-    // logic to pause subscription
-
-    return NextResponse.json({ status: 'paused' });
-
-}
-
-async function handleResume(userId: string) {
-    // Implement resume subscription logic
-    return NextResponse.json({ status: 'active' });
-}
-
-async function handleCancel(userId: string) {
-    // Implement cancel subscription logic
-    return NextResponse.json({ status: 'cancelled' });
-}

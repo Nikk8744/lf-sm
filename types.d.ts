@@ -146,7 +146,7 @@ export interface Notification {
     title: string;
     message: string;
     data?: Record<string, any>;
-    createdAt: string;
+    createdAt: Date;
     isRead: boolean;
     userId: string;
 }

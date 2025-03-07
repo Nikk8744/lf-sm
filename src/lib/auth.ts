@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
                 try {
                     const user = await db.select().from(users).where(eq(users.email, credentials.email.toString())).limit(1);
                     if(user.length == 0) return null;
-
+                    
                     const isPasswordValid = await compare(
                         credentials.password.toString(),
                         user[0].password,
@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({token, user}) {
+        async jwt({token, user,}) {
             if(user){
                 token.id = user.id
                 token.name = user.name
@@ -50,7 +50,10 @@ export const authOptions: NextAuthOptions = {
             // console.log("The token isss",token)
             return token;
         },
-        async session({session, token}) {
+        async session({session, token,trigger}) {
+            if(trigger === "update"){
+                session.user.name = token.name as string;
+            }   
             // console.log("The session isss",session)
             if(session.user){
                 session.user.id = token.id as string;

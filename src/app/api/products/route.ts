@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
 
         if(query) {
-            filters.push(
+            filters.push(   
                 sql`(LOWER(${products.name}) LIKE ${`%${query}%`} OR 
                     LOWER(${products.description}) LIKE ${`%${query}%`})`
             )
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         if(category && category !== "") {
             // Use ilike for case-insensitive comparison
             filters.push(sql`LOWER(${products.category}) = LOWER(${category})`)
-        }
+        }     
 
         if(minPrice && !isNaN(Number(minPrice))) {
             filters.push(sql`CAST(${products.price} AS DECIMAL) >= ${Number(minPrice)}`)

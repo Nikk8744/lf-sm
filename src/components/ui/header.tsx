@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { useCartStore } from "@/store/useCartStore";
 import { Badge } from "./badge";
+import { NotificationBell } from "../NotificationBell";
 
 function Header1() {
   const [isOpen, setOpen] = useState(false);
@@ -67,6 +68,8 @@ function Header1() {
         </div>
 
         <div className="flex justify-end w-full gap-4">
+          <NotificationBell />
+          
           <Link href="/cart">
             <Button variant="ghost" className="flex gap-2 text-center relative">
               <ShoppingCart />

@@ -11,7 +11,7 @@
 
 
 
-### Things that i have to lool afterwards
+### Things that i have to look at afterwards
 - the signin/signup issue -  that after signup the user should be signedin automaticaly
 - filter the products by category ✅
 - add a search bar ✅

@@ -1,19 +1,17 @@
 'use client';
-
 import { Bell } from 'lucide-react';
 import { useNotificationStore } from '@/store/useNotificationStore';
-import { Button } from './button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './dropdown-menu';
-import { Badge } from './badge';
+import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Badge } from './ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-
 
 export function NotificationBell() {
   const { 
     notifications, 
     markAsRead, 
-    // markAllAsRead, 
-    getUnreadCount 
+    getUnreadCount,
+    clearAll 
   } = useNotificationStore();
 
   const unreadCount = getUnreadCount();
@@ -40,7 +38,11 @@ export function NotificationBell() {
             <Button 
               variant="ghost" 
               size="sm"
-            //   onClick={() => markAllAsRead()}
+              onClick={() => {
+                notifications
+                  .filter(n => !n.isRead)
+                  .forEach(n => markAsRead(n.id));
+              }}
             >
               Mark all as read
             </Button>
@@ -65,12 +67,24 @@ export function NotificationBell() {
                   {notification.message}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
+                  {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                 </div>
               </DropdownMenuItem>
             ))
           )}
         </div>
+        {notifications.length > 0 && (
+          <div className="p-2 border-t">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full text-destructive hover:text-destructive"
+              onClick={() => clearAll()}
+            >
+              Clear all
+            </Button>
+          </div>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,16 +1,17 @@
 import { db } from "@/database/drizzle";
 import { orderItems, orders, products } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
+import { NotificationServices } from "@/lib/notifications";
 import { and, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest, context: { params: { orderId: string }}) {
-    
+export async function GET(request: NextRequest, context: { params: { orderId: string } }) {
+
     try {
         const session = await getServerSession(authOptions);
-        if(!session){
-            return new Response("Unauthorized", {status: 401})
+        if (!session) {
+            return new Response("Unauthorized", { status: 401 })
         };
 
         // const { orderId } = await params;
@@ -38,14 +39,14 @@ export async function GET(request: NextRequest, context: { params: { orderId: st
             productName: products.name,
             productImage: products.image,
         })
-        .from(orderItems)
-        .where(eq(orderItems.orderId, orderId))
-        .leftJoin(products, eq(orderItems.productId, products.id));
+            .from(orderItems)
+            .where(eq(orderItems.orderId, orderId))
+            .leftJoin(products, eq(orderItems.productId, products.id));
 
-        if(!order) {
+        if (!order) {
             return NextResponse.json(
-                {error: "Order not found"},
-                {status: 404}
+                { error: "Order not found" },
+                { status: 404 }
             )
         }
 
@@ -64,12 +65,40 @@ export async function GET(request: NextRequest, context: { params: { orderId: st
         };
 
         // return NextResponse.json(order, {status: 200})
-        return NextResponse.json(orderWithItems, {status: 200})
+        return NextResponse.json(orderWithItems, { status: 200 })
     } catch (error) {
         console.log("Error fetching order", error)
         return NextResponse.json(
-            {error: "Failed to fetch order"},
-            {status: 500}
+            { error: "Failed to fetch order" },
+            { status: 500 }
         )
+    }
+}
+
+export async function PATCH(request: Request, { params }: { params: { orderId: string } }) {
+    try {
+        const { status } = await request.json();
+
+        const { orderId } = await params;
+
+        const order = await db.update(orders)
+            .set({ orderStatus: status })
+            .where(eq(orders.id, orderId))
+            .returning();
+
+        // Send notification to user
+        await NotificationServices.orderStatus(
+            order[0].userId,
+            order[0].id,
+            status
+        );
+
+        return NextResponse.json(order[0]);
+    } catch (error) {
+        // Error handling
+        return NextResponse.json(
+            { error: `Failed to send the status notification, ${error}` },
+            { status: 500 }
+        );
     }
 }

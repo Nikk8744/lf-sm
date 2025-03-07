@@ -21,6 +21,7 @@ export async function POST(req: Request) {
         });
         console.log("The respoisnes issssss:", result.text);
         return result.toDataStreamResponse({});
+            
     } catch (error) {
         console.log(error);
     }
