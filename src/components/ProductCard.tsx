@@ -16,6 +16,7 @@ import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/hooks/use-toast";
 import { ProductCardProps } from "../../types";
+import { useCart } from "@/hooks/use-cart";
 
 export function ProductCard({
   id,
@@ -30,22 +31,31 @@ export function ProductCard({
   const session = useSession();
   const { toast } = useToast();
   const { setProduct } = useDirectPurchaseStore();
+  const { addItemToCart } = useCart();
 
   // console.log("The session isssss",session)
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if(!session.data){
       router.push('/sign-in');
       return;
     }
-    addToCart({
-      productId: id,
-      name,
-      price,
-      quantity: 1,
-      imageUrl,
-      farmLocation,
-    });
+    // addToCart({
+    //   productId: id,
+    //   name,
+    //   price,
+    //   quantity: 1,
+    //   imageUrl,
+    //   farmLocation,
+    // });
 
+    await addItemToCart({
+      productId: id,
+      name: name,
+      price: price,
+      quantity: 1,
+      imageUrl: imageUrl,
+      farmLocation: farmLocation,
+  });
 
     toast({
       title: "Added to Cart",

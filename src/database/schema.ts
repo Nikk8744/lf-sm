@@ -31,6 +31,15 @@ export const products = pgTable('products', {
     }).notNull().defaultNow(),
 });
 
+export const cartItems = pgTable('cart_items', {
+    id: uuid('id').notNull().primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull().references(() => users.id),
+    productId: uuid('product_id').notNull().references(() => products.id),
+    quantity: integer('quantity').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+})
+
 export const PAYMENT_STATUS_ENUM = pgEnum('payment_status', ['PENDING', 'COMPLETED', 'FAILED']);
 export const ORDER_STATUS_ENUM = pgEnum('order_status', ['PENDING', 'SHIPPED', 'DELIVERED']);
 

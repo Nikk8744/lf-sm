@@ -16,6 +16,7 @@ interface CartState {
     removeFromCart: (productId: string) => void;
     clearCart: () => void;
     updateQuantity: (productId: string, quantity: number) => void;
+    initializeCart: (items: CartItem[]) => void;
 }
 
 
@@ -29,22 +30,28 @@ export const useCartStore = create<CartState>()(
                     return {
                         cart: state.cart.map((item) =>
                             item.productId === product.productId
-                            ? { ...item, quantity: item.quantity + 1 }
-                            : item
+                                ? { ...item, quantity: item.quantity + 1 }
+                                : item
                         ),
                     };
                 }
-                return { cart: [...state.cart, { ...product, quantity: 1}] };
+                return { cart: [...state.cart, { ...product, quantity: 1 }] };
             }),
             removeFromCart: (productId) => set((state) => ({
                 cart: state.cart.filter((item) => item.productId !== productId),
             })),
-            clearCart: () => set({ cart: []}),
+            clearCart: () => set({ cart: [] }),
             updateQuantity: (productId, quantity) => set((state) => ({
-                cart: state.cart.map((item) => item.productId === productId ? { ...item, quantity } : item )
+                cart: state.cart.map((item) => item.productId === productId ? { ...item, quantity } : item)
             })),
+            initializeCart: (items) => set({ cart: items }),
         }),
-        { name: 'cart-storage', storage: createJSONStorage(() => localStorage) }
+        {
+            name: 'cart-storage',
+            // storage: createJSONStorage(() => localStorage)
+            storage: createJSONStorage(() => typeof window !== 'undefined' ? window.localStorage : undefinedq),
+            
+        }
     )
 );
 

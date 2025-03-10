@@ -5,23 +5,104 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useCartStore } from "@/store/useCartStore";
-import { ArrowRight, Minus, Plus, ShoppingBag, ShoppingCart, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Minus,
+  Plus,
+  ShoppingBag,
+  ShoppingCart,
+  Trash2,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CartLoading from "./CartLoading";
+import { useCart } from "@/hooks/use-cart";
 
 export default function CartPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
-  const [productStocks, setProductStocks] = useState<any>({});
+  const { cart, removeFromCart, updateQuantity, clearCart, initializeCart } =
+    useCartStore();
+  const [productStocks, setProductStocks] = useState<Record<string, number>>(
+    {}
+  );
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const { removeItemFromCart, updateItemQuantity } = useCart();
 
-  const total = useMemo(() => cart.reduce((sum, item) => sum + item.price * item.quantity, 0), [cart]);
+  // Calculate subtotal
+  const subtotal = useMemo(
+    () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [cart]
+  );
+
+  // Calculate shipping
+  const shippingFee = subtotal > 50 ? 0 : 5;
+
+  // Calculate total
+  const total = subtotal + shippingFee;
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (status === "unauthenticated") {
+        router.push("/sign-in");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/cart");
+        if (!response.ok) throw new Error("Failed to fetch cart items");
+        const items = await response.json();
+        if (cart.length === 0) {
+          initializeCart(items);
+          setIsInitialized(true);
+        }
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch cart items",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (!isInitialized) {
+      fetchCartItems();
+    }
+
+    fetchCartItems();
+  }, [status, router, initializeCart, toast, cart, isInitialized]);
+
+  // Sync cart changes with backend
+  useEffect(() => {
+    const syncCart = async () => {
+      if (!session?.user) return;
+
+      try {
+        console.log("The cart issss::::", cart);
+        await fetch("/api/cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ action: "sync", items: cart }),
+        });
+      } catch (error) {
+        console.error("Failed to sync cart:", error);
+      }
+    };
+
+    if (isInitialized) {
+      const timeoutId = setTimeout(syncCart, 500);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [cart, session?.user, isInitialized]);
 
   // Fetch product stock information
   useEffect(() => {
@@ -29,6 +110,7 @@ export default function CartPage() {
       router.push("/sign-in");
       return;
     }
+
     const fetchProductStocks = async () => {
       if (cart.length === 0) {
         setIsLoading(false);
@@ -36,19 +118,19 @@ export default function CartPage() {
       }
 
       setIsLoading(true);
-      const stockData: any = {};
-      
+      const stockData: Record<string, number> = {};
+
       try {
-        // Fetch stock information for each product in cart
         await Promise.all(
           cart.map(async (item) => {
             const response = await fetch(`/api/products/${item.productId}`);
-            if (!response.ok) return;
-            
+            if (!response.ok)
+              throw new Error(`Failed to fetch product ${item.productId}`);
+
             const product = await response.json();
             const availableStock = product.quantity || 0;
             stockData[item.productId] = availableStock;
-            
+
             // If current quantity exceeds stock, update it
             if (item.quantity > availableStock) {
               updateQuantity(item.productId, availableStock);
@@ -60,44 +142,81 @@ export default function CartPage() {
             }
           })
         );
-        
+
         setProductStocks(stockData);
       } catch (error) {
         console.error("Error fetching product stocks:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch product stock information",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProductStocks();
-  }, [cart, updateQuantity, toast]);
+  }, [cart, status, router, updateQuantity, toast]);
 
-  const handleUpdateQuantity = useCallback((productId: string, newQuantity: number) => {
-    // Don't allow quantity below 1
-    if (newQuantity < 1) return;
-    
-    // Don't allow quantity above available stock
-    const maxAvailable = productStocks[productId] || 0;
-    if (newQuantity > maxAvailable) {
-      toast({
-        title: "Maximum quantity reached",
-        description: `Only ${maxAvailable} items available in stock`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    updateQuantity(productId, newQuantity);
-  }, [productStocks, updateQuantity, toast]);
+  const handleUpdateQuantity = useCallback(
+    async (productId: string, newQuantity: number) => {
+      if (newQuantity < 1) return;
 
-  const handleRemove = useCallback((productId: string) => {
-    removeFromCart(productId);
-  }, [removeFromCart]);
+      const maxAvailable = productStocks[productId] || 0;
+      if (newQuantity > maxAvailable) {
+        toast({
+          title: "Maximum quantity reached",
+          description: `Only ${maxAvailable} items available in stock`,
+          variant: "destructive",
+        });
+        return;
+      }
 
-  if(isLoading){
-    return <div>
-      <CartLoading />
-    </div>;
+      try {
+        updateQuantity(productId, newQuantity);
+        await updateItemQuantity(productId, newQuantity);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update quantity",
+          variant: "destructive",
+        });
+      }
+    },
+    [productStocks, updateQuantity, toast, updateItemQuantity]
+  );
+
+  const handleRemove = useCallback(
+    async (productId: string) => {
+      try {
+        removeFromCart(productId);
+        await removeItemFromCart(productId);
+        toast({
+          title: "Item removed",
+          description: "Item has been removed from your cart",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to remove item",
+          variant: "destructive",
+        });
+      }
+    },
+    [removeFromCart, toast, removeItemFromCart]
+  );
+
+  const handleClearCart = useCallback(() => {
+    clearCart();
+    toast({
+      title: "Cart cleared",
+      description: "All items have been removed from your cart",
+    });
+  }, [clearCart, toast]);
+
+  if (isLoading) {
+    return <CartLoading />;
   }
 
   return (
@@ -107,16 +226,12 @@ export default function CartPage() {
         <h1 className="text-3xl font-bold">Your Cart</h1>
         {cart.length > 0 && (
           <Badge variant="secondary" className="ml-2">
-            {cart.length} {cart.length === 1 ? 'item' : 'items'}
+            {cart.length} {cart.length === 1 ? "item" : "items"}
           </Badge>
         )}
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-        </div>
-      ) : cart.length > 0 ? (
+      {cart.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
@@ -127,7 +242,7 @@ export default function CartPage() {
                     {/* Product Image */}
                     <div className="relative w-full sm:w-32 h-32 flex-shrink-0">
                       <Image
-                        src={item.imageUrl || "https://via.placeholder.com/150"}
+                        src={item.imageUrl || "/placeholder.png"}
                         alt={item.name}
                         fill
                         className="object-cover"
@@ -137,11 +252,23 @@ export default function CartPage() {
                     {/* Product Details */}
                     <div className="flex-1 p-4 flex flex-col justify-between">
                       <div>
-                        <Link href={`/products/${item.productId}`} className="hover:text-primary transition-colors">
+                        <Link
+                          href={`/products/${item.productId}`}
+                          className="hover:text-primary transition-colors"
+                        >
                           <h3 className="text-xl font-semibold">{item.name}</h3>
                         </Link>
-                        <p className="text-gray-500 text-sm mt-1">Farm Location: {item.farmLocation}</p>
-                        <p className="mt-2 text-lg font-bold text-green-600">${item.price}</p>
+                        <p className="text-gray-500 text-sm mt-1">
+                          Farm Location: {item.farmLocation}
+                        </p>
+                        <div className="mt-2 flex justify-between items-center">
+                          <p className="text-lg font-bold text-green-600">
+                            ${item.price}
+                          </p>
+                          <p className="text-lg font-semibold">
+                            Total: ${item.price * item.quantity}
+                          </p>
+                        </div>
                       </div>
 
                       <div className="flex justify-between items-center mt-4">
@@ -150,22 +277,40 @@ export default function CartPage() {
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.productId,
+                                item.quantity - 1
+                              )
+                            }
                             disabled={item.quantity <= 1}
                             className="h-8 w-8"
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
-                          <span className="w-8 text-center">{item.quantity}</span>
+                          <span className="w-8 text-center">
+                            {item.quantity}
+                          </span>
                           <Button
                             variant="outline"
                             size="icon"
-                            onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
-                            disabled={item.quantity >= (productStocks[item.productId] || 0)}
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                item.productId,
+                                item.quantity + 1
+                              )
+                            }
+                            disabled={
+                              item.quantity >=
+                              (productStocks[item.productId] || 0)
+                            }
                             className="h-8 w-8"
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({productStocks[item.productId] || 0} available)
+                          </span>
                         </div>
 
                         {/* Remove Button */}
@@ -195,20 +340,22 @@ export default function CartPage() {
                   <h2 className="text-xl font-semibold">Order Summary</h2>
                 </div>
                 <Separator className="my-4" />
-                
+
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Subtotal</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>${subtotal}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Shipping</span>
-                    <span>{total > 50 ? "Free" : "$5.00"}</span>
+                    <span>
+                      {shippingFee === 0 ? "Free" : `$${shippingFee}`}
+                    </span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span className="text-green-600">${(total > 50 ? total : total + 5).toFixed(2)}</span>
+                    <span className="text-green-600">${total}</span>
                   </div>
                 </div>
 
@@ -219,10 +366,10 @@ export default function CartPage() {
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
-                  <Button 
-                    variant="outline" 
-                    className="w-full text-red-500 hover:bg-red-50 hover:text-red-700 border-red-200" 
-                    onClick={clearCart}
+                  <Button
+                    variant="outline"
+                    className="w-full text-red-500 hover:bg-red-50 hover:text-red-700 border-red-200"
+                    onClick={handleClearCart}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Clear Cart
@@ -236,11 +383,16 @@ export default function CartPage() {
         <Card className="p-8">
           <div className="flex flex-col items-center justify-center py-12">
             <ShoppingCart className="h-16 w-16 text-gray-300 mb-4" />
-            <h2 className="text-2xl font-semibold text-gray-700 mb-2">Your cart is empty</h2>
-            <p className="text-gray-500 mb-6">Looks like you haven&apos;t added any products to your cart yet.</p>
+            <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+              Your cart is empty
+            </h2>
+            <p className="text-gray-500 mb-6">
+              Looks like you haven&apos;t added any products to your cart yet.
+            </p>
             <Link href="/products">
               <Button className="flex items-center gap-2">
                 Continue Shopping
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           </div>
