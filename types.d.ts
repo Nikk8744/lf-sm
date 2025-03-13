@@ -140,12 +140,23 @@ export type NotificationType =
 | 'SUBSCRIPTION_UPDATE'
 | 'GENERAL';
 
+type NotificationData = {
+    orderId?: string;
+    orderStatus?: string;
+    paymentStatus?: string;
+    deliveryDate?: string;
+    subscriptionId?: string;
+    subscriptionStatus?: string;
+    [key: string]: string | undefined;
+};
+
 export interface Notification {
     id: string;
     type: NotificationType;
     title: string;
     message: string;
-    data?: Record<string, any>;
+    // data?: Record<string, any>;
+    data?: NotificationData;
     createdAt: Date;
     isRead: boolean;
     userId: string;

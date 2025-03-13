@@ -7,8 +7,8 @@ export default function FarmerDashboardLayout({
   }) {
     return (
       <div className="flex min-h-screen">
-        <aside className="w-64 h-screen bg-white border-r">
-          <div className="flex flex-col h-full">
+        <aside className="w-64 min-h-screen bg-white border-r">
+          <div className="flex flex-col">
             <div className="p-6">
               <h2 className="text-2xl font-bold">Farmer Dashboard</h2>
             </div>

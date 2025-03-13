@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
             // console.log("The token isss",token)
             return token;
         },
-        async session({session, token,trigger}) {
+        async session({session, token, trigger}) {
             if(trigger === "update"){
                 session.user.name = token.name as string;
             }   

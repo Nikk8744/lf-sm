@@ -62,9 +62,11 @@ function Header1() {
         </div>
 
         <div className="flex lg:justify-center">
+          <Link href="/">
           <p className="font-semibold font-mono text-2xl text-[#222831]">
             Farm mart
           </p>
+          </Link>
         </div>
 
         <div className="flex justify-end w-full gap-4">

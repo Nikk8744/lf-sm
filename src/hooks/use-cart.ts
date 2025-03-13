@@ -17,7 +17,7 @@ export const useCart = () => {
             });
 
             if (!response.ok) throw new Error('Failed to add item to cart');
-            
+
             const updatedCart = await response.json();
             initializeCart(updatedCart);
         } catch (error) {
@@ -38,7 +38,7 @@ export const useCart = () => {
             });
 
             if (!response.ok) throw new Error('Failed to remove item from cart');
-            
+
             const updatedCart = await response.json();
             initializeCart(updatedCart);
         } catch (error) {
@@ -60,7 +60,7 @@ export const useCart = () => {
             });
 
             if (!response.ok) throw new Error('Failed to update cart quantity');
-            
+
             const updatedCart = await response.json();
             initializeCart(updatedCart);
         } catch (error) {
