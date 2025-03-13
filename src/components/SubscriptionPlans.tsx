@@ -198,6 +198,7 @@ const SubscriptionPlans = () => {
                     router.push('/subscription-success');
                   }}
                   onError={(error) => {
+                    console.error('Payment error:', error);
                     toast({
                       title: "Error",
                       description: "Payment processing failed. Please try again.",
