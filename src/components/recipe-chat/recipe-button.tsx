@@ -9,7 +9,7 @@ interface RecipeButtonProps {
   }>;
 }
 
-export function RecipeButton({ orderId, orderItems }: RecipeButtonProps) {
+export function RecipeButton({ orderId }: RecipeButtonProps) {
   const router = useRouter();
 
   return (

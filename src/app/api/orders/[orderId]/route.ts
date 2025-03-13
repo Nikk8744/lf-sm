@@ -90,7 +90,7 @@ export async function PATCH(request: Request, { params }: { params: { orderId: s
         await NotificationServices.orderStatus(
             order[0].userId,
             order[0].id,
-            status
+            status,
         );
 
         return NextResponse.json(order[0]);

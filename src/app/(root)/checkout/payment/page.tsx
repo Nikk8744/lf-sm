@@ -22,9 +22,7 @@ const PaymentPage = () => {
   const { product } = useDirectPurchaseStore();
   const { data: session } = useSession();
   const router = useRouter();
-  const [paymentStatus, setPaymentStatus] = useState<
-    "pending" | "completed" | "failed"
-  >("pending");
+  // const [paymentStatus, setPaymentStatus] = useState<"pending" | "completed" | "failed">("pending");
   const [shippingAddress, setShippingAddress] = useState("");
 
   useEffect(() => {
@@ -65,7 +63,7 @@ const PaymentPage = () => {
   };
 
   const handlePaymentSuccess = async () => {
-    setPaymentStatus("completed");
+    // setPaymentStatus("completed");
     router.push("/payment-success");
 
     console.log(
@@ -75,7 +73,7 @@ const PaymentPage = () => {
   };
 
   const handlePaymentFailure = (errorMessage?: string) => {
-    setPaymentStatus("failed");
+    // setPaymentStatus("failed");
     console.log("Payment Faileddddddddddddddddddddddddddddddddd");
     // router.push('/payment-failed')
     

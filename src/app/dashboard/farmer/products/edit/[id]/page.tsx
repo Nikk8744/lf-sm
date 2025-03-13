@@ -51,6 +51,7 @@ const EditProductPage = () => {
           image: product.image,
         });
       } catch (error) {
+        console.error('Error fetching product:', error);
         toast({
           variant: "destructive",
           title: "Error",
@@ -93,6 +94,7 @@ const EditProductPage = () => {
       });
       router.push('/dashboard/farmer/products');
     } catch (error) {
+      console.error('Error updating product:', error);
       toast({
         variant: "destructive",
         title: "Error",

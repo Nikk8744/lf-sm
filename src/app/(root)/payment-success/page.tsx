@@ -5,6 +5,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Order } from "../../../../types";
 
 // type Order = {
 //   id: string;
@@ -19,17 +20,15 @@ const PaymentSuccess = () => {
   const { product, clearProduct } = useDirectPurchaseStore();
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true)
-
-  const [purchaseType, setPurchaseType] = useState<string | null>(null);
+  // const [purchaseType, setPurchaseType] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to get purchase type from URL or localStorage
     const params = new URLSearchParams(window.location.search);
     const typeFromUrl = params.get('type');
     const typeFromStorage = localStorage.getItem('lastPurchaseType');
-    
     const purchaseType = typeFromUrl || typeFromStorage || null;
-    setPurchaseType(purchaseType);
+    // setPurchaseType(purchaseType);
 
     // Fetch order details
     const fetchOrderDetails = async () => {
@@ -75,7 +74,7 @@ const PaymentSuccess = () => {
     localStorage.removeItem("lastPurchaseType");
     // Clear shipping details from localStorage
     localStorage.removeItem("shippingDetails");
-  }, []);
+  }, [ product, cart, clearProduct, clearCart ]);
   console.log("The order details are:", orderDetails);
   console.log("The order shipping address details are:",orderDetails?.shippingAddress);
 

@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
 
         await db.insert(orderTracking).values({
             orderId: newOrder.id,
-            status: 'ORDER_PLACED' as any,
+            status: 'ORDER_PLACED',
             message: 'Order has been placed successfully',
             updatedBy: userId,
         });

@@ -1,10 +1,11 @@
-import { defaultTrackingMessages } from "@/app/api/orders/[orderId]/tracking/route";
+import { defaultTrackingMessages, TrackingStatus } from "@/app/api/orders/[orderId]/tracking/route";
 import { db } from "@/database/drizzle";
 import { orders, orderTracking } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+
 
 export async function PATCH(request: Request, { params }: { params: { orderId: string }}) {
 
@@ -15,20 +16,37 @@ export async function PATCH(request: Request, { params }: { params: { orderId: s
         }
 
         const { status } = await request.json();
+        const { orderId } = await params;
+
+        // Map ORDER_STATUS_ENUM to ORDER_TRACKING_STATUS_ENUM
+        let trackingStatus: TrackingStatus;
+        switch(status) {
+            case 'PENDING':
+                trackingStatus = 'PROCESSING';
+                break;
+            case 'SHIPPED':
+                trackingStatus = 'SHIPPED';
+                break;
+            case 'DELIVERED':
+                trackingStatus = 'DELIVERED';
+                break;
+            default:
+                trackingStatus = 'PROCESSING';
+        }
 
         const updateOrder = await db.update(orders)
             .set({ orderStatus: status, updatedAt: new Date() })
-            .where(eq(orders.id, params.orderId))
+            .where(eq(orders.id, orderId))
             .returning();
 
         // Update order tracking status 
         await db.update(orderTracking)
             .set({ 
-                status, 
-                message: defaultTrackingMessages[status] || `Status updated to ${status}`,
+                status,  
+                message: defaultTrackingMessages[trackingStatus] || `Status updated to ${status}`,
                 updatedBy: session.user.id,
             })
-            .where(eq(orderTracking.orderId, params.orderId));
+            .where(eq(orderTracking.orderId, orderId));
 
         return NextResponse.json({
             message: "Order status updated successfully",

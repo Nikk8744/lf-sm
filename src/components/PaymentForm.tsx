@@ -13,8 +13,8 @@ interface PaymentFormProps {
     address: string;
     instructions?: string;
   };
-  onSuccess: (result: any) => void;
-  onError: (error: any) => void;
+  onSuccess: (result: Error | unknown) => void;
+  onError: (error: Error | unknown) => void;
 }
 
 const PaymentForm = ({ selectedPlan, deliverySchedule, onSuccess, onError }: PaymentFormProps) => {

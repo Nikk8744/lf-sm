@@ -1,15 +1,16 @@
 import { db } from "@/database/drizzle";
 import { orders, orderTracking } from "@/database/schema";
 import { authOptions } from "@/lib/auth";
+import { NotificationServices } from "@/lib/notifications";
 import { trackingUpdateSchema } from "@/lib/validations";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 
 // Define the type for tracking status
-type TrackingStatus = 
+export type TrackingStatus = 
     | 'ORDER_PLACED'
     | 'CONFIRMED'
     | 'PROCESSING'
@@ -53,9 +54,11 @@ export async function POST(request: NextRequest,  { params }: {params: { orderId
 
         const trackingMessage = validatedData.message || defaultTrackingMessages[validatedData.status] || `Status updated to ${validatedData.status}`;
 
+        const { orderId } = await params;
 
         const [newTracking] = await db.insert(orderTracking).values({
-            orderId: params.orderId,
+            // orderId: params.orderId,
+            orderId,
             status: validatedData.status,
             message: trackingMessage,
             location: validatedData.location,
@@ -64,6 +67,14 @@ export async function POST(request: NextRequest,  { params }: {params: { orderId
 
         const orderStatus = getOrderStatus(validatedData.status);
         await db.update(orders).set({ orderStatus }).where(eq(orders.id, params.orderId));
+
+        // Send notification to user for tracking updates
+        await NotificationServices.deliveryUpdate(
+            // orders.userId,
+            session.user?.id,
+            params.orderId,
+            validatedData.status,
+        )
 
         return NextResponse.json({
             message: "Tracking updated successfully",
@@ -90,7 +101,7 @@ export async function GET(request: NextRequest, { params }: { params: { orderId:
 
         const trackingHistory = await db.select().from(orderTracking)
             .where(eq(orderTracking.orderId, orderId))
-            .orderBy(orderTracking.createdAt);
+            .orderBy(desc(orderTracking.createdAt));
 
         return NextResponse.json(trackingHistory, {status: 200})
     } catch (error) {

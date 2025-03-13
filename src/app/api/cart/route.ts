@@ -122,7 +122,7 @@ export async function GET() {
 
         return NextResponse.json(cartData);
     } catch (error) {
-        return NextResponse.json({ error: "Failed to fetch cart" }, { status: 500 });
+        return NextResponse.json({ error: `Failed to fetch cart: ${error}` }, { status: 500 });
     }
 }
 
@@ -149,6 +149,6 @@ export async function DELETE() {
             status: 200,
         })
     } catch (error) {
-        return NextResponse.json({ error: "Failed to remove from cart" }, { status: 500 });
+        return NextResponse.json({ error: `Failed to remove from cart: ${error}` }, { status: 500 });
     }
 }

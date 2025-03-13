@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";  // Import Link from Next.js
-import { useCartStore } from "@/store/useCartStore";
+// import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useSession } from "next-auth/react";
@@ -26,7 +26,7 @@ export function ProductCard({
   imageUrl,
   farmLocation,
 }: ProductCardProps) {
-  const addToCart = useCartStore((state) => state.addToCart);
+  // const addToCart = useCartStore((state) => state.addToCart);
   const router = useRouter();
   const session = useSession();
   const { toast } = useToast();

@@ -103,7 +103,7 @@ const OrderDetailPage = () => {
   ): "secondary" | "destructive" | "default" | "outline" | "myVariant" => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "secondary";
+        return "outline";
       case "processing":
         return "secondary";
       case "shipped":

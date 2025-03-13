@@ -62,6 +62,7 @@ export default function CartPage() {
           setIsInitialized(true);
         }
       } catch (error) {
+        console.error("Failed to fetch cart items:", error);
         toast({
           title: "Error",
           description: "Failed to fetch cart items",
@@ -177,6 +178,7 @@ export default function CartPage() {
         updateQuantity(productId, newQuantity);
         await updateItemQuantity(productId, newQuantity);
       } catch (error) {
+        console.error("Error updating quantity:", error);
         toast({
           title: "Error",
           description: "Failed to update quantity",
@@ -197,6 +199,7 @@ export default function CartPage() {
           description: "Item has been removed from your cart",
         });
       } catch (error) {
+        console.error("Error removing item from cart:", error);
         toast({
           title: "Error",
           description: "Failed to remove item",

@@ -12,6 +12,7 @@ import { Card, CardContent } from "./ui/card";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { z } from "zod";
+import { Review } from "../../types";
 
 const ProductReview = ({ productId }: { productId: string }) => {
   const { data: session } = useSession();
@@ -75,7 +76,7 @@ const ProductReview = ({ productId }: { productId: string }) => {
     };
 
     fetchReviews();
-  }, [productId, toast, session?.user]);
+  }, [productId, toast, session?.user, form]);
 
 
   const onSubmit = async (formData: z.infer<typeof reviewSchema>) => {
@@ -137,6 +138,7 @@ const ProductReview = ({ productId }: { productId: string }) => {
         });
       }
     } catch (error) {
+      console.error("Error submitting review:", error);
       toast({
         title: "Error",
         description: "Failed to submit your review",

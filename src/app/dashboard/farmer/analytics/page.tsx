@@ -1,9 +1,9 @@
 'use client';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 const AnalyticsPage = () => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // const [data, setData] = useState(null);
+    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {}, []);
 

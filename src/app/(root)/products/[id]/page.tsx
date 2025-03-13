@@ -159,12 +159,12 @@ const ProductDetails = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-3xl font-bold text-green-600">${product?.price}</span>
-                  <Badge variant={product?.quantity > 0  ? "outline" : "destructive"}>
-                    {product?.quantity > 0 ? "In Stock" : "Out of Stock"}
+                  <Badge variant={product && product?.quantity > 0  ? "outline" : "destructive"}>
+                    {product && product?.quantity > 0 ? "In Stock" : "Out of Stock"}
                   </Badge>
                 </div>
 
-                {product?.quantity > 0 && (
+                {product && product?.quantity > 0 && (
                   <div className="flex items-center gap-4">
                     <span className="text-sm text-gray-600">Quantity:</span>
                     <div className="flex items-center gap-2">

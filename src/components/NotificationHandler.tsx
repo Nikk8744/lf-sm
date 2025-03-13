@@ -19,13 +19,18 @@ const NotificationHandler = () => {
 
         try {
             const channel = pusherClient.subscribe(`private-user-${session.user.id}`);
-    
+
+            channel.bind('pusher:subscription_error', (error: Error) => {
+                console.error("Pusher subscription error:", error);
+            });
+
             const handleNotification = (notification: Notification) => {
     
                 const notificationWithUser = {
                     ...notification,
                     userId: session.user.id,
-                    createdAt: new Date(),
+                    // createdAt: new Date(),
+                    createdAt: notification.createdAt,
                 }
     
                 addNotification(notificationWithUser);

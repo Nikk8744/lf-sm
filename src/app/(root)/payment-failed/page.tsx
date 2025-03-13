@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { useCartStore } from '@/store/useCartStore'
+// import { useCartStore } from '@/store/useCartStore'
 import { useDirectPurchaseStore } from '@/store/useDirectPurchaseStore'
 import { AlertCircle, ArrowLeft, RefreshCw, ShoppingCart } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react'
 
 const PaymentFailed = () => {
     const router = useRouter();
-  const { cart } = useCartStore();
+  // const { cart } = useCartStore();
   const { product } = useDirectPurchaseStore();
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);

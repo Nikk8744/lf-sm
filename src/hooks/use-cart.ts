@@ -1,10 +1,25 @@
-import { useCartStore } from "@/store/useCartStore";
+import { CartItem, useCartStore } from "@/store/useCartStore";
 import { useCallback } from "react";
 
-export const useCart = () => {
-    const { cart, addToCart, removeFromCart, updateQuantity, clearCart, initializeCart } = useCartStore();
+export interface CartState {
+    items: CartItem[];
+    addItem: (item: CartItem) => void;
+    removeItem: (itemId: string) => void;
+    updateQuantity: (itemId: string, quantity: number) => void;
+    clearCart: () => void;
+  }
 
-    const addItemToCart = useCallback(async (product: any) => {
+export const useCart = () => {
+    const { 
+        cart, 
+        // addToCart, 
+        // removeFromCart, 
+        // updateQuantity, 
+        clearCart, 
+        initializeCart 
+    } = useCartStore();
+
+    const addItemToCart = useCallback(async (product: CartItem) => {
         try {
             const response = await fetch('/api/cart', {
                 method: 'POST',

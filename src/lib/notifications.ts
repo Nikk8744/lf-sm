@@ -6,9 +6,14 @@ export async function sendNotification(
     type: NotificationType,
     title: string,
     message: string,
-    data?: Record<string, any>
+    // data?: Record<string, any>
+    data?: {
+        orderId?: string;
+        status?: string;
+        message?: string;
+    }
 ) {
-    const notifcation = {
+    const notification = {
         id: crypto.randomUUID(),
         type,
         title,
@@ -22,10 +27,10 @@ export async function sendNotification(
     await pusherServer.trigger(
         `private-user-${userId}`,
         'notification',
-        notifcation,
+        notification,
     );
 
-    return notifcation;
+    return notification;
 };
 
 

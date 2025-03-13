@@ -33,7 +33,7 @@ export function ChatInterface({ orderItems }: ChatInterfaceProps) {
       <CardContent>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
-            {messages.map((message, i) => (
+            {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${

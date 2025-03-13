@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface CartItem {
+export interface CartItem {
     productId: string;
     name: string;
     price: number;
@@ -10,7 +10,7 @@ interface CartItem {
     farmLocation: string;
 }
 
-interface CartState {
+export interface CartState {
     cart: CartItem[];
     addToCart: (product: CartItem) => void;
     removeFromCart: (productId: string) => void;
@@ -49,7 +49,18 @@ export const useCartStore = create<CartState>()(
         {
             name: 'cart-storage',
             // storage: createJSONStorage(() => localStorage)
-            storage: createJSONStorage(() => typeof window !== 'undefined' ? window.localStorage : undefinedq),
+            storage: createJSONStorage(() => {
+                if(typeof window !== 'undefined'){
+                    return window.localStorage;
+                }
+                return{
+                    getItem: () => null,
+                    setItem: () => {},
+                    removeItem: () => {}
+                }
+            }
+               
+            ),
             
         }
     )

@@ -37,6 +37,7 @@ const SubscriptionsDetails = () => {
       setSubscriptions(data);
 
     } catch (error) {
+      console.error('Error fetching subscriptions:', error);
       toast({
         title: "Error",
         description: "Failed to load subscriptions",

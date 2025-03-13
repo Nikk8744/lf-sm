@@ -14,6 +14,7 @@ import {
   Text,
 } from "@react-email/components";
 import React from "react";
+import { OrderConfirmationEmailProps } from "../../types";
 
 const OrderConfirmationEmail = ({
   orderNumber,
@@ -43,41 +44,45 @@ const OrderConfirmationEmail = ({
               </Heading>
             </Section>
 
-            {Array.isArray(orderItems) && orderItems.map((item, index) => (
-              <Section key={index} className="mb-4">
-                <Row>
-                  <Column>
-                    {item.image && (
-                      <Img
-                        src={item.image}
-                        width={64}
-                        height={64}
-                        alt={item.name}
-                        className="rounded"
-                      />
-                    )}
-                  </Column>
-                  <Column>
-                    <Text className="font-semibold">Item:{item.name}</Text>
-                    <Text>Quantity: {item.quantity}</Text>
-                    <Text>Price: ${item.unitPrice}</Text>
-                    <Text>Total: ${item.totalPrice}</Text>
-                  </Column>
-                </Row>
-              </Section>
-            ))}
+            {Array.isArray(orderItems) &&
+              orderItems.map((item, index) => (
+                <Section key={index} className="mb-4">
+                  <Row>
+                    <Column>
+                      {item.image && (
+                        <Img
+                          src={item.image}
+                          width={64}
+                          height={64}
+                          alt={item.name}
+                          className="rounded"
+                        />
+                      )}
+                    </Column>
+                    <Column>
+                      <Text className="font-semibold">Item:{item.name}</Text>
+                      <Text>Quantity: {item.quantity}</Text>
+                      <Text>Price: ${item.unitPrice}</Text>
+                      <Text>Total: ${item.totalPrice}</Text>
+                    </Column>
+                  </Row>
+                </Section>
+              ))}
 
             <Hr className="my-4" />
 
             <Section>
-              <Text className="font-semibold">Total Amount: ${totalAmount}</Text>
+              <Text className="font-semibold">
+                Total Amount: ${totalAmount}
+              </Text>
               <Text className="mt-2">Shipping Address:</Text>
               <Text>{shippingAddress}</Text>
             </Section>
 
             <Section className="mt-8">
               <Text>
-                If you have any questions, please don&apos;t hesitate to contact us.
+                If you have any questions, please don&apos;t hesitate to contact
+                us.
               </Text>
               <Text>Best regards,</Text>
               <Text>Local Farmers Marketplace Team</Text>

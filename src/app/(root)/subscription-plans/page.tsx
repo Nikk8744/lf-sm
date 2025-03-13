@@ -1,7 +1,7 @@
 'use client';
 import SubscriptionPlans from "@/components/SubscriptionPlans";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Calendar, Leaf, ShieldCheck, Sprout, Users, HeartHandshake, Wallet } from "lucide-react";
+import { Truck, Calendar, Leaf, ShieldCheck, Sprout, HeartHandshake, Wallet } from "lucide-react";
 
 export default function SubscriptionPlansPage() {
   return (

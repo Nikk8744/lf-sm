@@ -15,6 +15,7 @@ import { Button } from "./ui/button";
 // import { useRouter } from 'next/navigation';
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, signUpSchema } from "@/lib/validations";
 
 interface FormValues {
   name: string;
@@ -28,7 +29,7 @@ interface AuthFormProps {
   buttonText: string;
   linkText: string;
   linkHref: string;
-  schema: any;
+  schema: typeof signUpSchema | typeof signInSchema;
 }
 
 const AuthForm = ({
