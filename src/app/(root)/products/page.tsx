@@ -15,7 +15,7 @@ import {
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 // export const revalidate = 120;
 
@@ -30,6 +30,14 @@ interface Product {
 }
 
 const ProductsPage = () => {
+  return (
+    <Suspense>
+      <ProductsPageContent />
+    </Suspense>
+  );
+};
+
+const ProductsPageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);

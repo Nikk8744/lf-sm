@@ -42,7 +42,12 @@ function getOrderStatus(trackingStatus: TrackingStatus): 'PENDING' | 'SHIPPED' |
     return 'PENDING';
 }
 
-export async function POST(request: NextRequest,  { params }: {params: { orderId: string }}) {
+export async function POST(
+    request: NextRequest,
+    // { params }: {params: { orderId: string }},
+    context: { params: Promise<{ orderId: string }> }
+    
+) {
     try {
         const session = await getServerSession(authOptions);
         if(!session){
@@ -54,7 +59,9 @@ export async function POST(request: NextRequest,  { params }: {params: { orderId
 
         const trackingMessage = validatedData.message || defaultTrackingMessages[validatedData.status] || `Status updated to ${validatedData.status}`;
 
-        const { orderId } = await params;
+        // const { orderId } = await params;
+        const { orderId } = await context.params;
+
 
         const [newTracking] = await db.insert(orderTracking).values({
             // orderId: params.orderId,
@@ -66,13 +73,13 @@ export async function POST(request: NextRequest,  { params }: {params: { orderId
         }).returning();
 
         const orderStatus = getOrderStatus(validatedData.status);
-        await db.update(orders).set({ orderStatus }).where(eq(orders.id, params.orderId));
+        await db.update(orders).set({ orderStatus }).where(eq(orders.id, orderId));
 
         // Send notification to user for tracking updates
         await NotificationServices.deliveryUpdate(
             // orders.userId,
             session.user?.id,
-            params.orderId,
+            orderId,
             validatedData.status,
         )
 

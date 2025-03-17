@@ -9,12 +9,15 @@ interface RecipeButtonProps {
   }>;
 }
 
-export function RecipeButton({ orderId }: RecipeButtonProps) {
+export function RecipeButton(
+  { orderId }: RecipeButtonProps
+) {
   const router = useRouter();
 
   return (
     <Button
       onClick={() => router.push(`/orders/${orderId}/recipes`)}
+      // onClick={() => router.push('/not-found')}
       variant="outline"
       size="sm"
     >

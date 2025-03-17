@@ -33,6 +33,7 @@ type DeliveryFormData = z.infer<typeof deliveryFormSchema>;
 interface DeliveryScheduleFormProps {
   onSubmit: (data: DeliveryFormData) => void;
   isLoading?: boolean;
+  defaultValues?: DeliveryFormData;
 }
 
 const DELIVERY_DAYS = [

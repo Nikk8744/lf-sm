@@ -187,7 +187,8 @@ const SubscriptionPlans = () => {
                 options={{
                   clientSecret,
                   appearance: { theme: 'stripe' },
-                  paymentMethodCreation: 'manual'
+                  // paymentMethodCreation: 'manual'
+                  
                 }}
               >
                 <PaymentForm

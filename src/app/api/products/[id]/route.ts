@@ -7,12 +7,15 @@ import { authOptions } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  // context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
 
-    const { params } = await Promise.resolve(context);
-    const { id } = await params;
+    // const { params } = await Promise.resolve(context);
+    // const { id } = await params;
+    const { id } = await context.params;
+
 
     const product = await db
       .select()
@@ -32,7 +35,11 @@ export async function GET(
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest, 
+  // { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
+) {
   try {
       const session = await getServerSession(authOptions);
       if (!session) {
@@ -43,7 +50,9 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
       // const url = new URL(request.url);
       // const id = url.searchParams.get('id');
-      const { id } = await params;
+      // const { id } = await params;
+      const { id } = await context.params;
+
 
       if (!id) {
           return NextResponse.json(

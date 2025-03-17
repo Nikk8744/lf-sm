@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { useCartStore } from "@/store/useCartStore";
 import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
+import { CheckoutProps } from "../../types";
   
 const Checkout = ({
   amount,
