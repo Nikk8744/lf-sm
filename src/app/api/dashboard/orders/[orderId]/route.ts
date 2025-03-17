@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 
-export async function PATCH(request: Request, { params }: { params: { orderId: string }}) {
+export async function PATCH(request: Request, context: { params: Promise<{ orderId: string }> }) {
 
     try {
         const session = await getServerSession(authOptions);
@@ -16,7 +16,8 @@ export async function PATCH(request: Request, { params }: { params: { orderId: s
         }
 
         const { status } = await request.json();
-        const { orderId } = await params;
+        // const { orderId } = params;
+        const { orderId } = await context.params;
 
         // Map ORDER_STATUS_ENUM to ORDER_TRACKING_STATUS_ENUM
         let trackingStatus: TrackingStatus;

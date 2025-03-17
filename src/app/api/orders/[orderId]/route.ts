@@ -11,7 +11,7 @@ export async function GET(request: NextRequest, context: { params: { orderId: st
     try {
         const session = await getServerSession(authOptions);
         if (!session) {
-            return new Response("Unauthorized", { status: 401 })
+            return new NextResponse("Unauthorized", { status: 401 })
         };
 
         // const { orderId } = await params;
@@ -79,7 +79,9 @@ export async function PATCH(request: Request, { params }: { params: { orderId: s
     try {
         const { status } = await request.json();
 
-        const { orderId } = await params;
+        // const { orderId } = await params;
+        const orderId  = params.orderId;
+
 
         const order = await db.update(orders)
             .set({ orderStatus: status })

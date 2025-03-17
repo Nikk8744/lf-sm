@@ -61,8 +61,8 @@ export async function POST(request: NextRequest) {
                         default_payment_method: paymentMethodId,
                     },
                 });
-            } catch (error: any) {
-                if (error.code === 'resource_already_exists') {
+            } catch (error) {
+                if ((error as Stripe.StripeRawError).code  === 'resource_already_exists') {
                     // If payment method is already attached, just update the default payment method
                     await stripe.customers.update(stripeCustomerId, {
                         invoice_settings: {

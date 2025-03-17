@@ -1,11 +1,11 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+// import { GoogleGenerativeAI } from '@google/generative-ai';
 // import { StreamingTextResponse } from 'ai';
 // import { experimental_StreamData } from 'ai';
 import { google } from '@ai-sdk/google';
 import { streamText } from 'ai';
 
 // Create a Google Generative AI client
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+// const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
 
 // IMPORTANT: Set the runtime to edge
 export const runtime = 'edge';
