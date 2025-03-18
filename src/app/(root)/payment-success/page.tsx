@@ -33,7 +33,7 @@ const PaymentSuccess = () => {
     // Fetch order details
     const fetchOrderDetails = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/orders");
+        const response = await fetch("/api/orders");
         if (response.ok) {
           const data = await response.json();
           // Assuming the latest order is the first in the array

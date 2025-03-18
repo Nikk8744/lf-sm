@@ -64,7 +64,7 @@ const ProductsPageContent = () => {
         currentSearchParams.set("page", page);
 
         const response = await fetch(
-          `http://localhost:3000/api/products?${currentSearchParams.toString()}`,
+          `api/products?${currentSearchParams.toString()}`,
           {
             method: "GET",
           }
