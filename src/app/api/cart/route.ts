@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
                 )
                 .execute();
         }
-        // Remove item
+        // Remove single item
         else if (body.type === "REMOVE_ITEM") {
             const { productId } = body;
 
@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
         }
         // Clear cart
         else if (body.type === "CLEAR_CART") {
+            // console.log("Cart clearedddddddddd");
             await db.delete(cartItems)
                 .where(eq(cartItems.userId, session.user.id))
                 .execute();
@@ -127,28 +128,29 @@ export async function GET() {
 }
 
 
-export async function DELETE() {
-    try {
-        const session = await getServerSession(authOptions);
-        if (!session?.user) {
-            return NextResponse.json({
-                error: "Unauthorized!!",
-                status: 401,
-            })
-        }
+// export async function DELETE() {
+//     try {
+//         const session = await getServerSession(authOptions);
+//         if (!session?.user) {
+//             return NextResponse.json({
+//                 error: "Unauthorized!!",
+//                 status: 401,
+//             })
+//         }
 
-        // update the quantity of the product in the cart
-        await db.delete(cartItems).where(
-            and(
-                eq(cartItems.userId, session.user.id),
-            )
-        );
+//         // update the quantity of the product in the cart
+//         await db.delete(cartItems)
+//         .where(
+//             and(
+//                 eq(cartItems.userId, session.user.id)
+//             )
+//         );
 
-        return NextResponse.json({
-            message: "Product removed from cart",
-            status: 200,
-        })
-    } catch (error) {
-        return NextResponse.json({ error: `Failed to remove from cart: ${error}` }, { status: 500 });
-    }
-}
+//         return NextResponse.json({
+//             message: "Product removed from cart",
+//             status: 200,
+//         })
+//     } catch (error) {
+//         return NextResponse.json({ error: `Failed to remove from cart: ${error}` }, { status: 500 });
+//     }
+// }

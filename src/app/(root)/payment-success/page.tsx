@@ -6,6 +6,7 @@ import { useDirectPurchaseStore } from "@/store/useDirectPurchaseStore";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Order } from "../../../../types";
+import { useCart } from "@/hooks/use-cart";
 
 // type Order = {
 //   id: string;
@@ -17,19 +18,21 @@ import { Order } from "../../../../types";
 const PaymentSuccess = () => {
   const router = useRouter();
   const { cart, clearCart } = useCartStore();
+  const { clearEntireCart } = useCart();
   const { product, clearProduct } = useDirectPurchaseStore();
   const [orderDetails, setOrderDetails] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   // const [purchaseType, setPurchaseType] = useState<string | null>(null);
 
   useEffect(() => {
     // Try to get purchase type from URL or localStorage
     const params = new URLSearchParams(window.location.search);
-    const typeFromUrl = params.get('type');
-    const typeFromStorage = localStorage.getItem('lastPurchaseType');
+    const typeFromUrl = params.get("type");
+    const typeFromStorage = localStorage.getItem("lastPurchaseType");
     const purchaseType = typeFromUrl || typeFromStorage || null;
     // setPurchaseType(purchaseType);
 
+    console.log("The purchase type in the frontend success page is:::", purchaseType);
     // Fetch order details
     const fetchOrderDetails = async () => {
       try {
@@ -52,29 +55,34 @@ const PaymentSuccess = () => {
       }
     };
 
+    
+    
+    const clearCartAfterPayment = async () => {
+      try {
+        // Clear only what was purchased
+        if (purchaseType === "direct" && product) {
+          clearProduct();
+        } else if (purchaseType === "cart" && cart && cart.length > 0) {
+          // console.log("Clearing the carttttttttttttttt👉👉👉👉👉👉👉👉");
+          clearCart();
+          await clearEntireCart();
+        }
+
+        // Clear purchase type from localStorage
+        localStorage.removeItem("lastPurchaseType");
+        // Clear shipping details from localStorage
+        localStorage.removeItem("shippingDetails");
+      } catch (error) {
+        console.error("Error clearing cart:", error);
+      }
+    };
     // fetchOrderDetails();
     setTimeout(() => {
       fetchOrderDetails();
+      // console.log("Clearing the cart after payment");
+      clearCartAfterPayment();          
     }, 2000);
-
-    // // Clear cart and direct purchase product on mount
-    // if (product) clearProduct();
-    // if (cart && cart.length > 0) clearCart();
-    // // clear shipping details from localstorage - ye krna optional hai but its preffered
-    // localStorage.removeItem("shippingDetails");
-
-    // Clear only what was purchased
-    if (purchaseType === "direct" && product) {
-      clearProduct();
-    } else if (purchaseType === "cart" && cart && cart.length > 0) {
-      clearCart();
-    }
-    
-    // Clear purchase type from localStorage
-    localStorage.removeItem("lastPurchaseType");
-    // Clear shipping details from localStorage
-    localStorage.removeItem("shippingDetails");
-  }, [ product, cart, clearProduct, clearCart ]);
+  }, [product, cart, clearProduct, clearCart, clearEntireCart]);
   // console.log("The order details are:", orderDetails);
   // console.log("The order shipping address details are:",orderDetails?.shippingAddress);
 

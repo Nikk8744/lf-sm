@@ -11,10 +11,7 @@ export interface CartState {
 
 export const useCart = () => {
     const { 
-        cart, 
-        // addToCart, 
-        // removeFromCart, 
-        // updateQuantity, 
+        cart,
         clearCart, 
         initializeCart 
     } = useCartStore();
@@ -84,12 +81,34 @@ export const useCart = () => {
         }
     }, [initializeCart]);
 
+    const clearEntireCart = useCallback(async () => {
+        // console.log('Starting clear entire cart');
+        try {
+            const response = await fetch('/api/cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'CLEAR_CART'
+                }),
+            });
+
+            if (!response.ok) throw new Error('Failed to clear cart');
+
+            clearCart(); // Clear frontend state
+            initializeCart([]);
+        } catch (error) {
+            console.error('Failed to clear cart:', error);
+            throw error;
+        }
+    }, [clearCart, initializeCart]);
+
     return {
         cart,
         addItemToCart,
         removeItemFromCart,
         updateItemQuantity,
-        clearCart,
+        clearCart: clearEntireCart,
+        clearEntireCart,
         initializeCart
     };
 };

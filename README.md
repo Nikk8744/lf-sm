@@ -4,7 +4,7 @@ A modern e-commerce platform connecting local farmers directly with consumers, b
 
 ## 🚀 Tech Stack
 
-- **Frontend:** Next.js (App Router), Tailwind CSS, React Query
+- **Frontend:** Next.js (App Router), Tailwind CSS
 - **Backend:** Next.js API routes, Drizzle ORM
 - **Database:** PostgreSQL (Neon)
 - **Authentication:** NextAuth.js (Google OAuth)
@@ -13,14 +13,14 @@ A modern e-commerce platform connecting local farmers directly with consumers, b
 - **Validation:** Zod
 - **State Management:** Zustand
 - **UI Components:** shadcn/ui
-- **Deployment:** Vercel
+- **Deployment:** Render
 
 ## 🛠️ Prerequisites
 
 - Node.js 18+ 
 - pnpm
 - PostgreSQL database (Neon)
-- Google OAuth credentials
+- Google OAuth credentials(optional)
 - Stripe account
 - Resend account
 

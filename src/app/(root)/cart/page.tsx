@@ -32,7 +32,7 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const [isInitialized, setIsInitialized] = useState(false);
-  const { removeItemFromCart, updateItemQuantity } = useCart();
+  const { removeItemFromCart, updateItemQuantity, clearEntireCart } = useCart();
 
   // Calculate subtotal
   const subtotal = useMemo(
@@ -210,13 +210,23 @@ export default function CartPage() {
     [removeFromCart, toast, removeItemFromCart]
   );
 
-  const handleClearCart = useCallback(() => {
-    clearCart();
-    toast({
-      title: "Cart cleared",
-      description: "All items have been removed from your cart",
-    });
-  }, [clearCart, toast]);
+  const handleClearCart = useCallback(async () => {
+    try {
+      clearCart();
+      await clearEntireCart();
+      toast({
+        title: "Cart cleared",
+        description: "All items have been removed from your cart",
+      });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      toast({
+        title: "Error",
+        description: "Failed to clear cart",
+        variant: "destructive",
+      });
+    }
+  }, [clearCart, toast, clearEntireCart]);
 
   if (isLoading) {
     return <CartLoading />;
