@@ -74,7 +74,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
 
     const orderResponse = await fetch(
     //   `${process.env.NEXT_PUBLIC_APP_URL}/api/orders`,
-      "/api/orders",
+      "https://local-farm-mart.onrender.com/api/orders",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
