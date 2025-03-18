@@ -73,8 +73,8 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     // console.log("Sending order data to API:",JSON.stringify(orderData, null, 2));
 
     const orderResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/orders`,
-    //   "https://local-farm-mart.onrender.com/api/orders",
+    //   `${process.env.NEXT_PUBLIC_APP_URL}/api/orders`,
+      "https://local-farm-mart.onrender.com/api/orders",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
