@@ -19,7 +19,7 @@ export async function POST(req: Request) {
             messages,
             system: `You are a helpful recipe assistant that helps users find recipes based on their ingredients and answers cooking-related questions.`,
         });
-        console.log("The respoisnes issssss:", result.text);
+        // console.log("The respoisnes issssss:", result.text);
         return result.toDataStreamResponse({});
             
     } catch (error) {

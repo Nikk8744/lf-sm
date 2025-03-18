@@ -35,7 +35,7 @@ const PaymentPage = () => {
         details.formattedAddress ||
         `${details.name}, ${details.address}, ${details.city}`;
       // setShippingAddress(details);
-      console.log("The shipping address is:", formattedAddress);
+      // console.log("The shipping address is:", formattedAddress);
       setShippingAddress(formattedAddress);
     } else {
       // Redirect to shipping page if no shipping details are found
@@ -66,15 +66,13 @@ const PaymentPage = () => {
     // setPaymentStatus("completed");
     router.push("/payment-success");
 
-    console.log(
-      "Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll"
-    );
+    // console.log("Payment Successfulllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll");
     // await send
   };
 
   const handlePaymentFailure = (errorMessage?: string) => {
     // setPaymentStatus("failed");
-    console.log("Payment Faileddddddddddddddddddddddddddddddddd");
+    // console.log("Payment Faileddddddddddddddddddddddddddddddddd");
     // router.push('/payment-failed')
     
     // Redirect to payment-failed page with error details if available

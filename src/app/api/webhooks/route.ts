@@ -25,11 +25,11 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
     validatePaymentIntent(paymentIntent);
 
     // aprse the simplified items from metadata
-    console.log("Raw metadata:", paymentIntent.metadata);
+    // console.log("Raw metadata:", paymentIntent.metadata);
     const simplifiedItems = JSON.parse(
       paymentIntent.metadata.itemsJson || "[]"
     );
-    console.log("Parsed items:", simplifiedItems);
+    // console.log("Parsed items:", simplifiedItems);
 
     const shippingAddress = paymentIntent.metadata.shippingAddress;
     if (!shippingAddress) {
@@ -70,10 +70,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
       isWebhook: true,
     };
 
-    console.log(
-      "Sending order data to API:",
-      JSON.stringify(orderData, null, 2)
-    );
+    // console.log("Sending order data to API:",JSON.stringify(orderData, null, 2));
 
     const orderResponse = await fetch(
     //   `${process.env.NEXT_PUBLIC_APP_URL}/api/orders`,
@@ -87,7 +84,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
 
     // this is not necessary but it helps in debugging
     const responseText = await orderResponse.text();
-    console.log(`Order API response (${orderResponse.status}):`, responseText);
+    // console.log(`Order API response (${orderResponse.status}):`, responseText);
 
     if (!orderResponse.ok) {
       // const errorText = await orderResponse.text();
@@ -109,7 +106,7 @@ async function createOrder(paymentIntent: Stripe.PaymentIntent) {
           payment_intent: paymentIntent.id,
           reason: "requested_by_customer",
         });
-        console.log("Payment refunded due to insufficient inventory");
+        // console.log("Payment refunded due to insufficient inventory");
       }
 
       throw new Error(errorData.error || "Failed to create order");
@@ -185,7 +182,7 @@ async function sendConfirmationEmail(
       totalAmount: (paymentIntent.amount / 100).toString(),
       shippingAddress: paymentIntent.metadata.shippingAddress || "Not provided",
     });
-    console.log("Email sent successfully");
+    // console.log("Email sent successfully");
   } catch (error) {
     console.error("Error sending confirmation email:", error);
     throw error;
@@ -265,7 +262,7 @@ async function sendSubscriptionEmail(subscription: Stripe.Subscription) {
       },
     });
 
-    console.log("Subscription confirmation email sent successfully");
+    // console.log("Subscription confirmation email sent successfully");
   } catch (error) {
     console.error("Error sending subscription confirmation email:", error);
     throw error;
@@ -273,7 +270,7 @@ async function sendSubscriptionEmail(subscription: Stripe.Subscription) {
 }
 
 export async function POST(req: Request) {
-  console.log(" 🔥🔥🔥🔥Webhook endpoint hittttttt", new Date().toISOString());
+//   console.log(" 🔥🔥🔥🔥Webhook endpoint hittttttt", new Date().toISOString());
   // get the payload that is coming fromn stripe and store it in text format not json
   try {
     const body = await req.text();
@@ -311,15 +308,13 @@ export async function POST(req: Request) {
 
     if (event.type === "payment_intent.succeeded") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log(
-        `PaymentIntent for ${paymentIntent.amount_received} was successful!`
-      );
+    //   console.log(`PaymentIntent for ${paymentIntent.amount_received} was successful!`);
 
       try {
         // Check if this is a subscription-related payment
         if (paymentIntent.metadata?.type === "subscription") {
           // Handle subscription payment differently
-          console.log("Subscription payment processed successfully");
+        //   console.log("Subscription payment processed successfully");
           return NextResponse.json({ success: true });
         }
         if (
@@ -330,7 +325,7 @@ export async function POST(req: Request) {
           // console.log("Order created successfully", orderResult)
 
           await sendConfirmationEmail(paymentIntent, orderResult);
-          console.log("Comnfirmation Email sent successfully");
+        //   console.log("Comnfirmation Email sent successfully");
           return NextResponse.json({
             success: true,
             order: orderResult.order.id,
@@ -353,9 +348,7 @@ export async function POST(req: Request) {
 
     if (event.type === "payment_intent.payment_failed") {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log(
-        `PaymentIntent for ${paymentIntent.amount_received} has failedddddddd!`
-      );
+    //   console.log(`PaymentIntent for ${paymentIntent.amount_received} has failedddddddd!`);
       // You can update the order status in your database here
       return NextResponse.json({
         success: false,
@@ -391,7 +384,7 @@ export async function POST(req: Request) {
       if (subscription.status === "active") {
         await sendSubscriptionEmail(subscription);
       }
-      console.log("Subscription confirmation email sent successfully");
+    //   console.log("Subscription confirmation email sent successfully");
 
       return NextResponse.json({ success: true });
     }

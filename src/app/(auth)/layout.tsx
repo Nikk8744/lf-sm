@@ -8,7 +8,7 @@ import React, { ReactNode } from 'react'
 const layout = async ({ children }: {children: ReactNode}) => {
     // const session = await getSession();
     const session = await getServerSession(authOptions);
-    console.log("The session is",session)   
+    // console.log("The session is",session)   
     if(session) redirect('/')
   return (
     <main className=" relative flex flex-col lg:flex-row h-screen w-screen">

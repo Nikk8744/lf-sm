@@ -20,13 +20,13 @@ export default function FileUpload({
     const [error, setError] = useState<string | null>(null)
 
   const onError = (err: {message: string}) => {
-    console.log("Error", err);
+    // console.log("Error", err);
     setError(err.message)
     setUploading(false)
   };
   
   const handleSuccess = (response: IKUploadResponse) => {
-    console.log("Success", response);
+    // console.log("Success", response);
     setUploading(false)
     setError(null)
     onSuccess(response)

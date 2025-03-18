@@ -86,7 +86,7 @@ export default function CartPage() {
       if (!session?.user) return;
 
       try {
-        console.log("The cart issss::::", cart);
+        // console.log("The cart issss::::", cart);
         await fetch("/api/cart", {
           method: "POST",
           headers: {

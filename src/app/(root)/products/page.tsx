@@ -76,7 +76,7 @@ const ProductsPageContent = () => {
         } else {
           setProducts(data.products);
           setCurrentPage(data.currentPage);
-          console.log("The current page isssss::", data.currentPage);
+          // console.log("The current page isssss::", data.currentPage);
           setTotalPages(data.totalPages);
         }
       } catch (error) {
@@ -95,7 +95,7 @@ const ProductsPageContent = () => {
     const search = current.toString();
     // console.log("The current page in handle change isssss::",search);
     const query = search ? `?${search}` : "";
-    console.log("The query isssss::", query);
+    // console.log("The query isssss::", query);
     router.push(`/products${query}`);
   };
 

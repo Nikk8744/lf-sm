@@ -43,7 +43,7 @@ const AddProductPage = () => {
 
   async function onSubmit(data: ProductFormValues) {
     try {
-      console.log(typeof data.quantity);
+      // console.log(typeof data.quantity);
       setLoading(true);
       const response = await fetch("/api/products", {
         method: "POST",

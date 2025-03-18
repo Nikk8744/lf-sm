@@ -23,7 +23,7 @@ export async function POST(request: NextRequest){
             );
         }
         
-        console.log("Received shipping address:", shippingAddress);
+        // console.log("Received shipping address:", shippingAddress);
 
         if (!shippingAddress) {
             return NextResponse.json(
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest){
             );
         }
 
-        console.log("The shipping address in payment intentttt issssssssssssssss :", shippingAddress)
+        // console.log("The shipping address in payment intentttt issssssssssssssss :", shippingAddress)
 
         const shippingAddressString = typeof shippingAddress === 'object' 
             ? JSON.stringify(shippingAddress)
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest){
             },
 
         })
-        console.log("Created payment intent with metadata:", paymentIntent.metadata);
+        // console.log("Created payment intent with metadata:", paymentIntent.metadata);
 
         return NextResponse.json({clientSecret: paymentIntent.client_secret })
     } catch (error) {

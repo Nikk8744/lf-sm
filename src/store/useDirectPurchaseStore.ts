@@ -18,7 +18,7 @@ interface DirectPurchaseStore {
 export const useDirectPurchaseStore = create<DirectPurchaseStore>((set) => ({
   product: null,
   setProduct: (product) => {
-    console.log('Setting product in store:', product); // Log to confirm
+    // console.log('Setting product in store:', product); // Log to confirm
     set({ product });
   },
   clearProduct: () => set({ product: null }),

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
             .where(eq(orders.paymentIntentId, paymentIntentId));
         
         if (existingOrders.length > 0) {
-            console.log(`Order already exists for payment intent ${paymentIntentId}`);
+            // console.log(`Order already exists for payment intent ${paymentIntentId}`);
             return NextResponse.json({
                 success: true,
                 message: "Order already processed",
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
         })
 
     } catch (error) {
-        console.log("Error occurred while creating order", error);
+        // console.log("Error occurred while creating order", error);
         if (error instanceof z.ZodError) {
             return NextResponse.json(
                 { error: "Validation failed", details: error },

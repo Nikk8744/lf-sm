@@ -89,7 +89,7 @@ const ProductsTable = () => {
 
     try {
       setLoading(true);
-      console.log("The product id is", id);
+      // console.log("The product id is", id);
       const response = await fetch(`/api/products/${id}`, {
         method: 'DELETE',
       });

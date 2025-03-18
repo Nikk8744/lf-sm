@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
         const { planId } = body;
-        console.log("Helloooooooooo from subscriptionnnnnnnnnnnnnnn");
+        // console.log("Helloooooooooo from subscriptionnnnnnnnnnnnnnn");
         // Get plan details
         const plan = await db
             .select()

@@ -20,7 +20,7 @@ const DirectCheckoutPage = () => {
       router.push('./sign-in');
       return;
     }
-    console.log("The product in useeffect isssss",product)
+    // console.log("The product in useeffect isssss",product)
     // Redirect to products if no product is selected
     if (!product) {
       router.push('/products');

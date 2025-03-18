@@ -41,7 +41,7 @@ const PaymentSuccess = () => {
             setOrderDetails(data[0]);
             setLoading(false);
           }
-          console.log("The response isdss::", data);
+          // console.log("The response isdss::", data);
         } else {
           setLoading(false);
           console.error("Failed to fetch orders");
@@ -75,8 +75,8 @@ const PaymentSuccess = () => {
     // Clear shipping details from localStorage
     localStorage.removeItem("shippingDetails");
   }, [ product, cart, clearProduct, clearCart ]);
-  console.log("The order details are:", orderDetails);
-  console.log("The order shipping address details are:",orderDetails?.shippingAddress);
+  // console.log("The order details are:", orderDetails);
+  // console.log("The order shipping address details are:",orderDetails?.shippingAddress);
 
   if (!orderDetails) {
     return (

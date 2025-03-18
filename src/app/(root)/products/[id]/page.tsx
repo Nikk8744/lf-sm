@@ -51,7 +51,7 @@ const ProductDetails = () => {
           throw new Error('Failed to fetch product');
         }
         const data = await response.json();
-        console.log("The data is of product detailsssss iss",data);
+        // console.log("The data is of product detailsssss iss",data);
         setProduct(data);
       } catch (error) {
         toast({

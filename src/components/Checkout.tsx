@@ -47,7 +47,7 @@ const Checkout = ({
     })
       .then((res) => res.json())
       .then((data) => setClientSecret(data.clientSecret));
-      console.log("The shipping address issssssssssssssss:", shippingAddress)
+      // console.log("The shipping address issssssssssssssss:", shippingAddress)
   }, [amount, purchaseType, cart, product, shippingAddress]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -68,8 +68,8 @@ const Checkout = ({
       return;
     }
 
-    console.log("Helloooooooooooooooooooooooooooooo");
-    console.log(stripe.confirmPayment);
+    // console.log("Helloooooooooooooooooooooooooooooo");
+    // console.log(stripe.confirmPayment);
 
     // Store the purchase type in localStorage
     localStorage.setItem('lastPurchaseType', purchaseType);
@@ -94,7 +94,7 @@ const Checkout = ({
         setErrorMessage(error.message || "An error occurred during payment");
         handlePaymentFailure(error.message);
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        console.log("Payment successful!");
+        // console.log("Payment successful!");
         handlePaymentSuccess();
       }
     } catch (err) {
