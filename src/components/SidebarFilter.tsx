@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Input } from "./ui/input";
-import { X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const SidebarFilter = () => {
   const router = useRouter();
@@ -82,13 +83,9 @@ const SidebarFilter = () => {
       maxPrice !== ""
     );
   };
-  return (
-    <Sidebar
-      variant="sidebar"
-      collapsible="none"
-      className="bg-[#F7F7F7] border-r border-gray-200 shadow-lg rounded-lg"
-    >
-      <div className="flex h-full flex-col">
+
+  const FilterContent = () => (
+    <div className="flex h-screen flex-col">
         <SidebarHeader className="border-b px-6 py-4">
           <div className="flex items-center justify-between text-center">
             <h2 className="text-2xl font-semibold text-gray-800">Filters</h2>
@@ -193,7 +190,43 @@ const SidebarFilter = () => {
           </ScrollArea>
         </SidebarContent>
       </div>
+  );
+
+   // Desktop sidebar
+   const DesktopSidebar = () => (
+    <Sidebar
+      variant="sidebar"
+      collapsible="none"
+      className="hidden lg:block sticky top-0 h-screen w-64 bg-[#F7F7F7] border-r border-gray-200 shadow-lg"
+    >
+      <FilterContent />
     </Sidebar>
+  );
+
+  // Mobile sidebar
+  const MobileSidebar = () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="lg:hidden fixed left-3 top-24 z-40"
+        >
+          <Menu className="h-6 w-6" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
+        <FilterContent />
+      </SheetContent>
+    </Sheet>
+  );
+
+
+  return (
+    <>
+      <DesktopSidebar />
+      <MobileSidebar />
+    </>
   );
 };
 

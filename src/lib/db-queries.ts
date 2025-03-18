@@ -18,3 +18,4 @@ export const getHotProducts = cache(async () => {
         .orderBy(desc(products.createdAt))
         .limit(10);
 });
+

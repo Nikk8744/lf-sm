@@ -92,38 +92,38 @@ export function ProductCard({
   };
 
   return (
-    <Card className="w-[350px] h-[500px] flex flex-col bg-white shadow-lg rounded-lg overflow-hidden">
-      <CardHeader className="flex-shrink-0">
+    <Card className="w-full h-[450px] sm:h-[500px] flex flex-col bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+      <CardHeader className="flex-shrink-0 p-3 sm:p-4">
         <div className="relative w-full h-56">
           <Image
             src={imageUrl || 'https://images.pexels.com/photos/65174/pexels-photo-65174.jpeg'}
             alt="Product Image"
             layout="fill"
             objectFit="cover"
-            className="transition-transform duration-300 transform hover:scale-105"
+            className="transition-transform duration-300 transform hover:scale-105 rounded-md"
           />
         </div>
         {/* Directly using Link without the <a> tag */}
         <Link href={`./products/${id}`}>
-          <CardTitle className="mt-2 text-xl font-semibold text-gray-800 hover:text-blue-600">
+          <CardTitle className="mt-2 text-lg sm:text-xl font-semibold text-gray-800 hover:text-blue-600">
             {name}
           </CardTitle>
         </Link>
-        <CardDescription className="mt-1 text-sm text-gray-600">{description}</CardDescription>
+        <CardDescription className="mt-1 text-sm text-gray-600 line-clamp-2">{description}</CardDescription>
       </CardHeader>
 
-      <CardContent className="flex-grow">
-        <div className="flex justify-between mt-2">
+      <CardContent className="flex-grow p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
           <h1 className="text-lg font-semibold text-gray-800">Price: <span className="text-green-600">${price}</span></h1>
           <h1 className="text-sm text-gray-600">Farm Location: {farmLocation}</h1>
         </div>
       </CardContent>
 
-      <CardFooter className="flex justify-between mt-4 gap-2">
-        <Button onClick={handleBuyNow} variant="outline" className="w-full py-2 text-sm font-semibold text-gray-800 border border-gray-300 rounded-md hover:bg-gray-100">
+      <CardFooter className="flex p-3 sm:p-4 gap-2">
+        <Button onClick={handleBuyNow} variant="outline" className="flex-1 py-2 text-sm font-semibold text-gray-800 border border-gray-300 rounded-md hover:bg-gray-100">
           Buy
         </Button>
-        <Button onClick={handleAddToCart} className="w-full py-2 text-sm font-semibold text-white rounded-md hover:bg-blue-700">
+        <Button onClick={handleAddToCart} className="flex-1 py-2 text-sm font-semibold text-white rounded-md hover:bg-blue-700">
           Add to Cart
         </Button>
       </CardFooter>

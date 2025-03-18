@@ -11,10 +11,10 @@ const layout = async ({ children }: {children: ReactNode}) => {
     console.log("The session is",session)   
     if(session) redirect('/')
   return (
-    <main className=" relative flex flex-row h-screen w-screen">
+    <main className=" relative flex flex-col lg:flex-row h-screen w-screen">
         <section className="flex-1 flex items-center justify-center">
-            <div className='w-full max-w-md p-6'>
-                <h1 className="text-4xl font-semibold text-center mb-6 font-mono">FARMERS MARKET</h1>
+            <div className='w-full max-w-md p-4 sm:p-6'>
+                <h1 className="text-3xl sm:text-4xl font-semibold text-center mb-4 sm:mb-6 font-mono">FARMERS MARKET</h1>
                 {children}
             </div>
         </section>

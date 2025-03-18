@@ -201,13 +201,16 @@ const ProductsPageContent = () => {
   // console.log("The response issss",products)
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <SidebarInset>
         <div className="flex min-h-screen bg-[#EEEEEE]">
           {/* <SidebarFilter1 /> */}
           <SidebarFilter />
-          <div className="flex-1 p-4 pt-6 flex flex-col min-h-screen">
-            <h1 className="text-3xl font-bold mb-8 ml-10">All Products</h1>
+
+          <div className="flex-1 w-full lg:w-[calc(100%-16rem)] p-4 lg:p-6">
+            <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-8 ml-4 md:ml-10">
+              All Products
+            </h1>
             <SearchBar />
             {error ? (
               <p className="text-red-500">{error}</p>
@@ -220,7 +223,7 @@ const ProductsPageContent = () => {
               </div>
             ) : (
               <div className="flex flex-col flex-grow">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                   {products.map((product) => (
                     <ProductCard
                       key={product.id}
