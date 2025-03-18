@@ -15,7 +15,7 @@ export const signInWithCredentials = async (
 
     try {
         const result = await signIn('credentials', { email, password, redirect: false });
-        console.log("The result is",result)
+        // console.log("The result is",result)
         if(result?.error){
             return { success: false, error: result.error };
         }
@@ -47,10 +47,13 @@ export const signUp = async (params: AuthCredentials) => {
             name,
             email,
             password: hashedPassword,
-        });
+        }).returning();
 
         // await signInWithCredentials({ email, password });
-        return { success: true, signupResult };
+        return { success: true, data: {
+            email: signupResult[0].email,
+            name : signupResult[0].name,
+        } };
     } catch (error) {
         console.log(error, "Signup error");
         return {success: false, error: "Signup error"};

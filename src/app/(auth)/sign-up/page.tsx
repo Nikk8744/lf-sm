@@ -4,6 +4,7 @@ import { signUp } from "@/lib/actions/auth";
 import { toast } from "@/hooks/use-toast";
 import AuthForm from "@/components/AuthForm";
 import { signUpSchema } from "@/lib/validations";
+// import { useForm } from "react-hook-form";
 
 interface FormValues {
   name: string;
@@ -13,6 +14,7 @@ interface FormValues {
 
 export default function SignUpPage() {
   const router = useRouter();
+  // const form = useForm<FormValues>();
 
   async function onSubmit(data: FormValues) {
     const result = await signUp(data);
@@ -23,6 +25,8 @@ export default function SignUpPage() {
         // description: isSignIn ? 'You have been signed in successfully' : 'You have been signed up successfully',
         description: "You have been signed up successfully",
       });
+
+      // form.reset();
 
       router.push("/");
     } else {
