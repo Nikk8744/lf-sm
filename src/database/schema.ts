@@ -15,6 +15,52 @@ export const users = pgTable('users', {
     }).notNull().defaultNow(),
 });
 
+// export const FARMER_STATUS_ENUM = pgEnum('farmer_status', ['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED']);
+// export const FARMER_VERIFICATION_STATUS_ENUM = pgEnum('verification_status', ['UNVERIFIED', 'PENDING', 'VERIFIED', 'REJECTED']);
+
+export const farmers = pgTable('farmers', {
+    id: uuid('id').notNull().primaryKey().defaultRandom().unique(),
+    name: text('name').notNull().default('Farmer'),
+    email: text('email').notNull().unique(),
+    password: text('password').notNull(),
+    role: ROLE_ENUM('role').default('FARMER'),
+
+    // Farm Details
+    farmName: text('farm_name').notNull(),
+    farmDescription: text('farm_description').notNull(),
+    farmAddress: text('farm_address').notNull(),
+    farmCity: text('farm_city').notNull(),
+    farmState: text('farm_state').notNull(),
+    farmZip: varchar('farm_zip').notNull(),
+    farmLocation: text('farm_location'), // For storing coordinates or detailed location
+
+    // Business Details
+    // businessRegistrationNumber: varchar('business_registration_number'),
+    // taxId: varchar('tax_id'),
+    yearsOfExperience: integer('years_of_experience').notNull(),
+
+    // Verification and Status
+    // status: FARMER_STATUS_ENUM('status').default('PENDING'),
+    // verificationStatus: FARMER_VERIFICATION_STATUS_ENUM('verification_status').default('UNVERIFIED'),
+    // verificationDocument: text('verification_document'), // URL to uploaded document
+
+    // Profile and Settings
+    profileImage: text('profile_image'),
+    // coverImage: text('cover_image'),
+    // specialties: text('specialties')[],  // Array of farming specialties
+    // certifications: text('certifications')[], // Array of certification names
+    
+    // // Stripe Integration
+    // stripeAccountId: text('stripe_account_id').unique(),
+    // stripeAccountStatus: boolean('stripe_account_status').default(false),
+    
+    // Timestamps and Metadata
+    // rejectionReason: text('rejection_reason'),
+    lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
+})
+
 
 export const products = pgTable('products', {
     id: uuid('id').notNull().primaryKey().defaultRandom().unique(),

@@ -126,8 +126,8 @@ export function ProductCard({
           <p className="text-sm sm:text-base font-semibold text-gray-800">
             Price: <span className="text-green-600">${price}</span>
           </p>
-          <p className="text-xs sm:text-sm text-gray-600">
-            Farm Location: {farmLocation}
+          <p className="text-xs sm:text-sm text-gray-800 font-semibold">
+            Farm Location: <span className="font-normal">{farmLocation}</span> 
           </p>
         </div>
       </CardContent>

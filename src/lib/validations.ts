@@ -91,3 +91,19 @@ export const trackingUpdateSchema = z.object({
   message: z.string().optional(),
   location: z.string().optional(),
 });
+
+export const farmerSignUpSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  farmName: z.string().min(1, "Farm name is required"),
+  farmDescription: z.string().min(10, "Farm description must be at least 10 characters"),
+  farmAddress: z.string().min(1, "Farm address is required"),
+  farmCity: z.string().min(1, "City is required"),
+  farmState: z.string().min(1, "State is required"),
+  farmZip: z.string().min(5, "Valid ZIP code is required"),
+  yearsOfExperience: z.number().min(0, "Years of experience must be 0 or greater"),
+  profileImage: z.string().optional(),
+});
+
+export type FarmerSignUpInput = z.infer<typeof farmerSignUpSchema>;

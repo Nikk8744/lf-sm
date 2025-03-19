@@ -2,11 +2,12 @@
 
 // import { signIn } from "@/auth";
 import { db } from "@/database/drizzle";
-import { users } from "@/database/schema";
+import { farmers, users } from "@/database/schema";
 import { hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { signIn } from "next-auth/react"; // this is a client side component only so either i'll have to make change in the auth and export signIn and signOut there or wirte the signin/login code in signin page 
 import { AuthCredentials } from "../../../types";
+import { FarmerSignUpInput } from "../validations";
 
 export const signInWithCredentials = async (
     params: Pick<AuthCredentials, "email" | "password">,
@@ -59,3 +60,28 @@ export const signUp = async (params: AuthCredentials) => {
         return {success: false, error: "Signup error"};
     }
 };
+
+export async function registerFarmer(data: FarmerSignUpInput){
+    try {
+        const existingUser = await db
+            .select()
+            .from(farmers)
+            .where(eq(farmers.email, data.email))
+            .limit(1);
+
+        if(existingUser.length > 0){
+            return { error: "User already exists" };
+        }
+        const hashedPassword = await hash(data.password, 10);    
+
+        const newFarmer = await db.insert(farmers).values({
+            ...data,
+            password: hashedPassword,
+        }).returning();
+
+        return { success: true, data: newFarmer[0] };
+    } catch (error) {
+        console.error("Error registering farmer:", error);
+        return { error: "Failed to register farmer" };
+    }
+}
