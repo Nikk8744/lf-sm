@@ -69,7 +69,7 @@ export const products = pgTable('products', {
     price: decimal('price').notNull(),
     category: varchar('category').notNull(),
     image: text('image'),
-    farmerId: uuid('farmer_id').notNull().references(() => users.id),
+    farmerId: uuid('farmer_id').notNull().references(() => farmers.id),
     quantity: integer('quantity'),
     farmLocation: text('farm_location'),
     createdAt: timestamp('created_at', {
@@ -200,7 +200,7 @@ export const orderTracking = pgTable('order_tracking', {
     status: ORDER_TRACKING_STATUS_ENUM('status').notNull(),
     message: text('message'),
     location: text('location'),
-    updatedBy: uuid('updated_by').references(() => users.id),
+    updatedBy: uuid('updated_by').references(() => farmers.id),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 

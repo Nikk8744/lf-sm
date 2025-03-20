@@ -18,14 +18,14 @@ export default function FarmerSignUpPage() {
       const response = await registerFarmer(data);
 
     //   const result = await response.json();
-
-      if (!response.error) {
-        throw new Error(response.error || "Failed to register");
+      console.log("The response is",response);
+      if (!response) {
+        throw new Error(response || "Failed to register");
       }
 
       toast({
         title: "Registration successful!",
-        description: "You can now login to your farmer account.",
+        description: "You can now login to your account using your email and password.",
       });
 
       router.push("/sign-in");

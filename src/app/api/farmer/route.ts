@@ -9,7 +9,7 @@ export async function GET() {
   try {
     
     const session = await getServerSession(authOptions);
-    // console.log("The role of user isssss::::", session);
+    console.log("The role of user isssss::::", session);
     if (!session ) {
       return new Response("Unauthorized", { status: 401 });
     }

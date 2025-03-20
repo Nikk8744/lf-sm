@@ -1,5 +1,5 @@
 import { db } from "@/database/drizzle";
-import { users } from "@/database/schema";
+import { farmers, users } from "@/database/schema";
 import { compare } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { NextAuthOptions } from "next-auth";
@@ -19,20 +19,28 @@ export const authOptions: NextAuthOptions = {
                 }
                 try {
                     const user = await db.select().from(users).where(eq(users.email, credentials.email.toString())).limit(1);
-                    if(user.length == 0) return null;
+                    // if(user.length == 0) return null;
+
+                    // If not found in users, check farmers table
+                    const farmer = await db.select().from(farmers).where(eq(farmers.email, credentials.email.toString())).limit(1);
+                    // console.log("The farmer uissssssss",farmer)
+
+                    const foundUser = user[0] || farmer?.[0];
+                    if(!foundUser) return null;
                     
                     const isPasswordValid = await compare(
                         credentials.password.toString(),
-                        user[0].password,
+                        // user[0].password,
+                        foundUser.password,
                     );
                     if(!isPasswordValid){
                         throw new Error("Invalid password");
                     }
                     return {
-                        id: user[0].id.toString(),
-                        email: user[0].email,
-                        name: user[0].name,
-                        role: user[0].role || "USER",
+                        id: foundUser.id.toString(),
+                        email: foundUser.email,
+                        name: foundUser.name,
+                        role: farmer ? "FARMER" : (foundUser.role || "USER"),
                     }
                 } catch (error) {
                     throw error

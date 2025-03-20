@@ -57,6 +57,13 @@
       "when": 1741584425743,
       "tag": "0007_same_sinister_six",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1742464175857,
+      "tag": "0008_parallel_lady_bullseye",
+      "breakpoints": true
     }
   ]
 }

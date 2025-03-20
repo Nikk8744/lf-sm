@@ -19,6 +19,7 @@ export default function SignInPage() {
     // const result = await signInWithCredentials(data);
     const result = await signIn('credentials', { email: data.email, password: data.password, redirect: false });
     
+    console.log("The sign-in result isssss",result);
 
     if (result?.ok) {
       toast({
