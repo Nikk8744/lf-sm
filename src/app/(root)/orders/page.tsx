@@ -28,6 +28,10 @@ const OrdersPage = () => {
     try {
       const response = await fetch("api/orders");
       if (!response.ok) {
+        if (response.status === 401 || response.status === 404) {
+          setOrders([]);
+          return;
+        }
         throw new Error("Failed to fetch your orders");
       }
       const orders = await response.json();
@@ -49,16 +53,16 @@ const OrdersPage = () => {
 
   const getStatusColor = (
     status: string
-  ): "secondary" | "destructive" | "default" | "outline" | "myVariant" => {
+  ): "secondary" | "destructive" | "default" | "outline" | "myVariant" | "myVariant2" => {
     switch (status.toLowerCase()) {
       case "pending":
         return "secondary";
       case "processing":
         return "secondary";
       case "shipped":
-        return "outline";
-      case "delivered":
         return "myVariant";
+      case "delivered":
+        return "myVariant2";
       case "cancelled":
         return "destructive";
       default:

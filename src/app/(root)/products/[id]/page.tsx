@@ -119,7 +119,7 @@ const ProductDetails = () => {
       <Button
         variant="default"
         onClick={() => router.push('/products')}
-        className="mb-6 flex items-center gap-2 hover:bg-secondary"
+        className="mb-6 flex items-center gap-2 hover:bg-gray-700"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Products

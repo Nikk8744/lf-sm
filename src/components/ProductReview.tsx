@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { z } from "zod";
 import { Review } from "../../types";
+import Link from "next/link";
 
 const ProductReview = ({ productId }: { productId: string }) => {
   const { data: session } = useSession();
@@ -249,7 +250,9 @@ const ProductReview = ({ productId }: { productId: string }) => {
         <Card className="border border-gray-200 shadow-sm bg-gray-100">
           <CardContent className="p-6 text-center">
             <p className="text-gray-600">Please sign in to leave a review</p>
+            <Link href="/sign-in">
             <Button className="mt-4 bg-green-600 hover:bg-green-700">Sign In</Button>
+            </Link>
           </CardContent>
         </Card>
       )}

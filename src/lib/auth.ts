@@ -27,6 +27,8 @@ export const authOptions: NextAuthOptions = {
 
                     const foundUser = user[0] || farmer?.[0];
                     if(!foundUser) return null;
+
+                    // console.log("The found user issssss",foundUser)
                     
                     const isPasswordValid = await compare(
                         credentials.password.toString(),
@@ -40,7 +42,7 @@ export const authOptions: NextAuthOptions = {
                         id: foundUser.id.toString(),
                         email: foundUser.email,
                         name: foundUser.name,
-                        role: farmer ? "FARMER" : (foundUser.role || "USER"),
+                        role: foundUser.role === "FARMER" ? "FARMER" : (foundUser.role || "USER"),
                     }
                 } catch (error) {
                     throw error
