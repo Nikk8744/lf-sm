@@ -1,14 +1,31 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Form,
   FormControl,
-  FormDescription,
+  // FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Loader2,
+  User,
+} from "lucide-react";
+
+export const Icons = {
+  spinner: Loader2,
+  eye: Eye,
+  eyeOff: EyeOff,
+  lock: Lock,
+  mail: Mail,
+  user: User,
+};
 import { useForm } from "react-hook-form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
@@ -41,6 +58,10 @@ const AuthForm = ({
   schema,
 }: AuthFormProps) => {
   // const router = useRouter()
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -52,92 +73,135 @@ const AuthForm = ({
 
   const isSignUp = buttonText.toLowerCase() === "sign-up";
 
+  const handleSubmit = async (data: FormValues) => {
+    setIsLoading(true);
+    try {
+      await onSubmit(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <p className="text-center font-medium text-lg font-mono text-black p-3">
+    <div className="w-full max-w-md mx-auto">
+    <div className="space-y-2 text-center">
+      <h1 className="text-2xl font-semibold tracking-tight">
         {title}
-      </p>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {isSignUp && (
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="John Doe" {...field} />
-                  </FormControl>
-                  <FormDescription>Enter your full name.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
-          <FormField
-            control={form.control}
-            name="email"
-            rules={{
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Invalid email address",
-              },
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="john@example.com"
-                    type="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>Enter your email address.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="password"
-            rules={{
-              required: "Password is required",
-              minLength: {
-                value: 2,
-                message: "Password must be at least 5 characters",
-              },
-            }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="password" {...field} />
-                </FormControl>
-                <FormDescription>Enter your password</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button type="submit" className="w-full">
-            {buttonText}
-          </Button>
-        </form>
-      </Form>
-      <p className="text-center text-base font-semibold p-3">
-        {/* {linkText}{" "} */}
-        <Link
-          href={linkHref}
-          className="text-bold text-blue-500 hover:text-red-400"
-        >
-          {linkText}
-        </Link>
+      </h1>
+      <p className="text-sm text-muted-foreground">
+        Enter your details below to {isSignUp ? "create your account" : "sign in to your account"}
       </p>
     </div>
+
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 mt-6">
+        {isSignUp && (
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Icons.user className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                      placeholder="John Doe" 
+                      className="pl-10" 
+                      {...field}
+                      disabled={isLoading}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Icons.mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="name@example.com"
+                    type="email"
+                    className="pl-10"
+                    {...field}
+                    disabled={isLoading}
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Icons.lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                    type={showPassword ? "text" : "password"} 
+                    className="pl-10 pr-10" 
+                    placeholder="Enter your password"
+                    {...field}
+                    disabled={isLoading}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Icons.eyeOff className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <Icons.eye className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </Button>
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoading}
+        >
+          {isLoading && (
+            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          )}
+          {buttonText}
+        </Button>
+      </form>
+    </Form>
+
+    <div className="mt-6 text-center text-sm">
+      <Link
+        href={linkHref}
+        className="text-primary hover:text-blue-600 font-medium"
+      >
+        {linkText}
+      </Link>
+    </div>
+  </div>
   );
 };
 
