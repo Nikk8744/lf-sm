@@ -25,6 +25,11 @@ export default withAuth(
                     return true;
                 }
 
+                // Require authentication for user-details
+                if(pathname.startsWith("/user-details")) {
+                    return !!token;
+                }
+
                 return !!token
             }
         }
@@ -35,6 +40,7 @@ export const config = {
     matcher: [
     '/',
     // '/profile/:profileId*',
+    '/user-details',
     '/login',
     '/signup',
     '/api/:path*',

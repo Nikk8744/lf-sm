@@ -7,13 +7,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRouter } from "next/navigation";
 import { CreditCard, MapPin, Package, User } from "lucide-react";
+import { useEffect } from "react";
 
 export default function UserDetailsPage() {
-  const { data: session } = useSession();
+  const { data: session,status } = useSession();
   const router = useRouter();
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push('/sign-in');
+    }
+  }, [status, router]);
+
+  // Show loading state while checking session
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
   if (!session?.user) {
-    router.push('/sign-in');
     return null;
   }
 
@@ -68,7 +79,7 @@ export default function UserDetailsPage() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-500">Account Type</label>
-                  <p className="text-lg font-medium">Standard User</p>
+                  <p className="text-lg font-medium">{session.user.role === "USER" ? "User" : "Farmer"}</p>
                 </div>
               </div>
               
@@ -124,7 +135,7 @@ export default function UserDetailsPage() {
             <Button variant="outline" onClick={() => router.push('/')}>
               Back to Home
             </Button>
-            <Button variant="destructive">
+            <Button variant="destructive" onClick={ () => alert("You can't delete your account🤫🤫🤫🤫🤫")}>
               Delete Account
             </Button>
           </div>

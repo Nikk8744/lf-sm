@@ -107,3 +107,13 @@ export const farmerSignUpSchema = z.object({
 });
 
 export type FarmerSignUpInput = z.infer<typeof farmerSignUpSchema>;
+
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(6, "Password must be at least 6 characters"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+});
