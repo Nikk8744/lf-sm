@@ -47,7 +47,7 @@ export default function ChangePasswordPage() {
         newPassword: formData.newPassword,
       });
 
-      if (response.error) {
+      if (response.error  ) {
         throw new Error("Failed to change password");
       }
 

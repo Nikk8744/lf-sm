@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { updateProfile } from "@/lib/actions/user";
 import { useSession } from "next-auth/react";
@@ -11,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EditProfilePage() {
-  const { data: session, status, update: updateSession } = useSession();
+  const { data: session, status, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -39,8 +40,7 @@ export default function EditProfilePage() {
       }
 
       // Update the session with new data
-      await updateSession({
-        ...session,
+       await update({
         user: {
           ...session?.user,
           name: formData.name,
@@ -64,6 +64,31 @@ export default function EditProfilePage() {
       setIsLoading(false);
     }
   };
+
+  // Show loading state while session is loading
+  if (status === "loading" ) {
+    return (
+      <Card className="max-w-2xl mx-auto mt-10">
+        <CardHeader>
+          <Skeleton className="h-8 w-48" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="max-w-2xl mx-auto mt-10">

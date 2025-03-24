@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
                     const foundUser = user[0] || farmer?.[0];
                     if(!foundUser) return null;
 
-                    // console.log("The found user issssss",foundUser)
+                    console.log("The found user issssss",foundUser)
                     
                     const isPasswordValid = await compare(
                         credentials.password.toString(),
@@ -51,19 +51,21 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async jwt({token, user,}) {
+        async jwt({token, user, trigger, session}) {
             if(user){
                 token.id = user.id
                 token.name = user.name
                 token.role = user.role || "USER"
             }
             // console.log("The token isss",token)
+            if(trigger === "update" && session){
+                // session.user.name = token.name as string;
+                token.name = session.user.name;
+                // console.log("The session nameeeeeeee isss",session.user.name)
+            }  
             return token;
         },
-        async session({session, token, trigger}) {
-            if(trigger === "update"){
-                session.user.name = token.name as string;
-            }   
+        async session({session, token}) { 
             // console.log("The session isss",session)
             if(session.user){
                 session.user.id = token.id as string;

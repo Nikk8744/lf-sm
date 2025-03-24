@@ -1,32 +1,34 @@
 import { z } from "zod";
 import { changePasswordSchema, updateProfileSchema } from "../validations";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../auth";
 import { users } from "@/database/schema";
 import { db } from "@/database/drizzle";
 import { eq } from "drizzle-orm";
 import { compare, hash } from "bcryptjs";
+import { getSession } from "next-auth/react";
 
 export async function updateProfile(data: z.infer<typeof updateProfileSchema>) {
+  // console.log("The data is",data)
   try {
-    const session = await getServerSession(authOptions);
+    // const session = await getServerSession(authOptions); // this wont come as this is a client side function not server side 
+    const session = await getSession();
     if (!session?.user?.id) {
       return { error: "Unauthorized" };
     }
 
     const validatedData = updateProfileSchema.safeParse(data);
+    // console.log("The validated data is",validatedData)
 
     if (!validatedData.success) {
       return { error: validatedData.error.errors[0].message };
     }
 
-    await db
+     await db
       .update(users)
       .set({
         name: validatedData.data.name,
       })
-      .where(eq(users.id, session.user.id));
-
+      .where(eq(users.id, session.user.id)).returning();
+      // console.log("The updated user is",updatedUser)
     return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -41,7 +43,7 @@ export async function changePassword(
   data: z.infer<typeof changePasswordSchema>
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getSession();
     if (!session?.user?.id) {
       return { error: "Unauthorized" };
     }

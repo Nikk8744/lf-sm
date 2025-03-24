@@ -31,7 +31,7 @@ function Feature() {
           <div className="w-full max-w-full px-6">
             <Carousel>
               <CarouselContent>
-                {Array.from({ length: 5 }).map((_, index) => (
+                {Array.from({ length: 3 }).map((_, index) => (
                   <CarouselItem key={index}>
                     <div className="flex rounded-md aspect-video bg-muted items-center justify-center">
 
