@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
                     const foundUser = user[0] || farmer?.[0];
                     if(!foundUser) return null;
 
-                    console.log("The found user issssss",foundUser)
+                    // console.log("The found user issssss",foundUser)
                     
                     const isPasswordValid = await compare(
                         credentials.password.toString(),

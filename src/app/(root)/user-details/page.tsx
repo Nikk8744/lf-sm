@@ -62,7 +62,7 @@ export default function UserDetailsPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile">
+          <TabsContent value="profile"> 
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -100,7 +100,7 @@ export default function UserDetailsPage() {
           <TabsContent value="addresses">
             <div className="space-y-6">
               <h3 className="text-lg font-semibold">Saved Addresses</h3>
-              <p className="text-muted-foreground">No addresses saved yet.</p>
+              <p className="text-muted-foreground">No addresses saved yet. Comming Soon</p>
               <Button onClick={() => router.push('/add-address')}>
                 Add New Address
               </Button>
@@ -115,14 +115,14 @@ export default function UserDetailsPage() {
                   View All Orders
                 </Button>
               </div>
-              <p className="text-muted-foreground">No recent orders found.</p>
+              <p className="text-muted-foreground">No recent orders found. Comming Soon</p>
             </div>
           </TabsContent>
 
           <TabsContent value="payments">
             <div className="space-y-6">
               <h3 className="text-lg font-semibold">Payment Methods</h3>
-              <p className="text-muted-foreground">No payment methods saved.</p>
+              <p className="text-muted-foreground">No payment methods saved. Comming Soon</p>
               <Button onClick={() => router.push('/add-payment-method')}>
                 Add Payment Method
               </Button>

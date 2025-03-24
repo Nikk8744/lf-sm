@@ -2,6 +2,8 @@
 
 A modern e-commerce platform connecting local farmers directly with consumers, built with Next.js 13+ and the App Router.
 
+> `ITS A WORK IN PROGRESS!!!`
+
 ## 🚀 Tech Stack
 
 - **Frontend:** Next.js (App Router), Tailwind CSS
